@@ -64,27 +64,36 @@ export function WorldVerifyCard({
   const [starting, setStarting] = useState(false);
   const lastError = useRef<VerifyError | null>(null);
 
-  const refreshStatus = useCallback(async () => {
-    if (!user) return;
-    try {
-      const res = await fetch("/api/world/status", {
-        headers: await merchantJsonHeaders(user),
-      });
-      const data = (await res.json()) as { verified?: boolean; credential?: string };
-      setPhase(
-        data.verified
-          ? { kind: "verified", credential: data.credential ?? null }
-          : { kind: "unverified" },
-      );
-      onVerifiedChange?.(Boolean(data.verified));
-    } catch {
-      setPhase({ kind: "unverified" });
-    }
-  }, [user, onVerifiedChange]);
+  const [statusNonce, setStatusNonce] = useState(0);
+  const refreshStatus = useCallback(() => setStatusNonce((n) => n + 1), []);
 
   useEffect(() => {
-    void refreshStatus();
-  }, [refreshStatus]);
+    if (!user) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/world/status", {
+          headers: await merchantJsonHeaders(user),
+        });
+        const data = (await res.json()) as {
+          verified?: boolean;
+          credential?: string;
+        };
+        if (cancelled) return;
+        setPhase(
+          data.verified
+            ? { kind: "verified", credential: data.credential ?? null }
+            : { kind: "unverified" },
+        );
+        onVerifiedChange?.(Boolean(data.verified));
+      } catch {
+        if (!cancelled) setPhase({ kind: "unverified" });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, onVerifiedChange, statusNonce]);
 
   async function start() {
     if (!user) return;
@@ -240,7 +249,7 @@ export function WorldVerifyCard({
           handleVerify={handleVerify}
           onSuccess={() => {
             setPhase({ kind: "verified", credential: null });
-            void refreshStatus();
+            refreshStatus();
           }}
           onError={onError}
         />

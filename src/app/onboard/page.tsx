@@ -35,6 +35,7 @@ import {
   type MerchantAuthProof,
 } from "@/lib/wallet/xrpl";
 import { merchantJsonHeaders } from "@/lib/world/client-auth";
+import { WorldListingNotice } from "@/components/world/world-listing-notice";
 
 export default function OnboardPage() {
   const router = useRouter();
@@ -645,6 +646,8 @@ export default function OnboardPage() {
               Settings
             </Link>
           </div>
+
+          <WorldListingNotice user={merchant.user} />
 
           <MerchantChat
             lines={lines}
