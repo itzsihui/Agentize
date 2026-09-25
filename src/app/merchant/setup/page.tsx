@@ -190,6 +190,21 @@ export default function MerchantSetupPage() {
         </p>
       ) : null}
 
+      <div className="mt-4 rounded-md border border-border bg-muted/30 px-3 py-2.5 text-xs leading-relaxed text-foreground/70">
+        <p className="font-medium text-foreground/85">
+          Agent payments screened by Intercepta
+        </p>
+        <p className="mt-1">
+          Before an x402 payment settles, the payer wallet is Quick Scanned
+          (Deep Scan if elevated). Dirty or sanctioned funds are refused — your
+          treasury never takes them. Last block reason appears on{" "}
+          <Link href="/dashboard" className="underline underline-offset-2">
+            Ops
+          </Link>
+          .
+        </p>
+      </div>
+
       {error ? (
         <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
           {error}

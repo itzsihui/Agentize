@@ -146,6 +146,35 @@ Without `OPENAI_API_KEY`, chat falls back to deterministic tools. Protocol endpo
 | `BUYER_PRIVATE_KEY` | Server-side x402 settle (`0x…`) |
 | `MERCHANT_ADDRESS` | Default merchant payTo (`0x…`) |
 | `BASE_*` / `TOKEN_*` / `X402_FACILITATOR_URL` | Base Sepolia RPC, USDC, facilitator |
+| `INTERCEPTA_API_KEY` | Live Intercepta / W3A key ([intercepta.io/ethglobal](https://intercepta.io/ethglobal)) |
+
+---
+
+## Intercepta — seller-first x402 screening
+
+Merchant `/s/{slug}/buy` **refuses dirty payers before facilitator settle**. Buyer-side payTo scan is secondary. Verdicts are live — never mocked.
+
+### Call sites
+
+| File | What |
+|---|---|
+| [`src/lib/intercepta/client.ts`](./src/lib/intercepta/client.ts) | Live Quick Scan + Deep Scan (`X-API-KEY`) |
+| [`src/lib/intercepta/policy.ts`](./src/lib/intercepta/policy.ts) | allow / hold / refuse |
+| [`src/lib/protocol/handlers.ts`](./src/lib/protocol/handlers.ts) | **Seller gate** — screen payer (or demo `screenAs`) before `verifyAndSettle` |
+| [`src/lib/agents/tools-buyer.ts`](./src/lib/agents/tools-buyer.ts) | Buyer Quick Scan of `payTo`; forwards `screenAs` |
+| [`src/app/buyer/_components/intercepta-persona-picker.tsx`](./src/app/buyer/_components/intercepta-persona-picker.tsx) | Honest vs malicious buyer demo |
+
+### Demo (pass + block)
+
+1. Add `INTERCEPTA_API_KEY` from [intercepta.io/ethglobal](https://intercepta.io/ethglobal). Optional: paste Discord-pinned addresses into `INTERCEPTA_DEMO_PERSONAS`. Defaults are public mainnet OFAC/mixer fixtures.
+2. **Pass:** `/buyer` → Demo persona **Honest buyer** → authorize USDC → 200 receipt.
+3. **Block:** **Pretend to be malicious** → pick Sanctioned / Mixer / Scammer → new chat banner → authorize → merchant **402** with Intercepta reasons (no settle). Reasons show in chat, `/dashboard` Ops, and the failed order.
+
+Settlement still uses `BUYER_PRIVATE_KEY` on Base Sepolia. Intercepta screens the **mainnet** persona address.
+
+### API feedback (Intercepta)
+
+Time to first live call was short: docs + `X-API-KEY` on GET `/quick-scan` were enough. What confused us: risk graphs are mainnet-only, so a funded Sepolia payer always looks clean — the Discord pin / `screenAs` override is required for the blocked path. Missing from public docs: an official fixture list (pins live in Discord) and any non-EVM coverage; we wanted a `chainId` on Quick Scan for testnet context.
 
 ### Scripts
 

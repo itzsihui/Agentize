@@ -27,6 +27,15 @@ export default function DashboardPage() {
     protocolBase: string | null;
     region: string | null;
   } | null>(null);
+  const [intercepta, setIntercepta] = useState<{
+    enabled: boolean;
+    lastBlock: {
+      message: string;
+      store?: string;
+      orderId?: string;
+      ts: number;
+    } | null;
+  } | null>(null);
 
   useEffect(() => {
     if (!merchant.ready) return;
@@ -47,11 +56,21 @@ export default function DashboardPage() {
           protocolBase: string | null;
           region: string | null;
         };
+        intercepta?: {
+          enabled: boolean;
+          lastBlock: {
+            message: string;
+            store?: string;
+            orderId?: string;
+            ts: number;
+          } | null;
+        };
       };
       setStores(data.stores);
       setOrders(data.orders);
       setReviews(data.reviews ?? []);
       setAws(data.aws ?? null);
+      setIntercepta(data.intercepta ?? null);
     };
     load();
     const timer = setInterval(load, 2500);
@@ -195,6 +214,28 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          <div className="mt-3 border border-border bg-background px-4 py-3 text-sm">
+            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              Intercepta · payer screen
+            </p>
+            <p className="mt-1 text-foreground/80">
+              Agent USDC payments are screened before settle. Dirty payers are
+              blocked.
+              {intercepta?.enabled === false
+                ? " Add INTERCEPTA_API_KEY to enable live scans."
+                : ""}
+            </p>
+            {intercepta?.lastBlock ? (
+              <p className="mt-2 text-xs text-destructive">
+                Last block: {intercepta.lastBlock.message}
+              </p>
+            ) : (
+              <p className="mt-2 text-xs text-muted-foreground">
+                No Intercepta blocks in this process yet.
+              </p>
+            )}
+          </div>
+
           {merchant.profile?.governance ? (
             <div className="mt-3 border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
               <p className="font-mono text-[10px] uppercase tracking-[0.14em]">
@@ -293,8 +334,16 @@ export default function DashboardPage() {
                             order.status === "paid" ? "default" : "secondary"
                           }
                         >
-                          {order.status}
+                          {order.intercepta?.decision === "refuse" ||
+                          order.intercepta?.decision === "hold"
+                            ? `held · ${order.intercepta.decision}`
+                            : order.status}
                         </Badge>
+                        {order.intercepta?.reasons?.[0] ? (
+                          <p className="mt-1 max-w-[14rem] text-[10px] leading-snug text-muted-foreground">
+                            {order.intercepta.reasons[0]}
+                          </p>
+                        ) : null}
                       </TableCell>
                       <TableCell>
                         {order.explorerUrl ? (

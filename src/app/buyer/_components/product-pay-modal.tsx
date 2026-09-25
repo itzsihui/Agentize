@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import type { MarketProductPick, PaymentRail } from "../_lib/buyer-flow";
+import { InterceptaRiskBadge } from "./intercepta-risk-badge";
 
 export function ProductPayModal({
   open,
@@ -14,6 +15,8 @@ export function ProductPayModal({
   onPay,
   busy,
   receiptNote,
+  screenAs,
+  personaLabel,
 }: {
   open: boolean;
   product: MarketProductPick | null;
@@ -25,8 +28,11 @@ export function ProductPayModal({
   receiptNote?: string | null;
   /** @deprecated Visa rail removed from buyer demo UI. */
   firstVisaIssue?: boolean;
+  screenAs?: string | null;
+  personaLabel?: string | null;
 }) {
   const [step, setStep] = useState<"detail" | "confirm">("detail");
+  const [payToRefused, setPayToRefused] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -178,6 +184,11 @@ export function ProductPayModal({
                 </span>{" "}
                 after HTTP 402, then unlock with PAYMENT-SIGNATURE.
               </div>
+              <InterceptaRiskBadge
+                address={screenAs || product.merchantAddress}
+                personaLabel={personaLabel}
+                onDecision={(d) => setPayToRefused(d === "refuse")}
+              />
             </div>
           )}
 
@@ -207,7 +218,11 @@ export function ProductPayModal({
               Continue to pay
             </Button>
           ) : (
-            <Button type="button" disabled={busy} onClick={onPay}>
+            <Button
+              type="button"
+              disabled={busy || payToRefused}
+              onClick={onPay}
+            >
               {busy
                 ? "Paying USDC…"
                 : product.quarantined

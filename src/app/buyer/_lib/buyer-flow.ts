@@ -94,6 +94,10 @@ export type BuyerFlowState = {
   chatBusy: boolean;
   snowtrace: string | null;
   error: string | null;
+  /** Demo persona id (`honest` or a malicious pin). */
+  riskPersonaId: string | null;
+  /** Mainnet address Intercepta screens on the merchant gate. */
+  screenAs: string | null;
 };
 
 export const INITIAL_STEPS: ChainStep[] = [
@@ -167,6 +171,8 @@ export function createInitialState(): BuyerFlowState {
     chatBusy: false,
     snowtrace: null,
     error: null,
+    riskPersonaId: "honest",
+    screenAs: null,
   };
 }
 

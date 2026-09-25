@@ -17,6 +17,7 @@ export async function runBuyerAgent(args: {
   message?: string;
   quote?: PayQuote;
   buyerUid?: string;
+  screenAs?: string;
 }): Promise<{
   steps: BuyerStep[];
   receipt?: BuyerReceipt;
@@ -26,6 +27,7 @@ export async function runBuyerAgent(args: {
     const result = await payX402Tool({
       origin: args.origin,
       buyerUid: args.buyerUid,
+      screenAs: args.screenAs,
       quote: {
         storeSlug: args.quote.storeSlug,
         skuId: args.quote.skuId,
@@ -45,6 +47,7 @@ export async function runBuyerAgent(args: {
     origin: args.origin,
     message: args.message || "buy a hackathon shirt",
     buyerUid: args.buyerUid,
+    screenAs: args.screenAs,
   });
   fallback.steps.unshift({
     type: "info",

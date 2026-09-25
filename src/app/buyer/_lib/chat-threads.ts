@@ -24,6 +24,8 @@ export type ChatThreadSnapshot = {
   cartQty: Record<string, number>;
   flaggedSkus: Array<{ id: string; storeSlug: string; flags: string[] }>;
   lastSearchQueries: string[];
+  riskPersonaId: string | null;
+  screenAs: string | null;
 };
 
 export type ChatThread = {
@@ -104,6 +106,8 @@ export function snapshotFromState(state: BuyerFlowState): ChatThreadSnapshot {
     cartQty: state.cartQty,
     flaggedSkus: state.flaggedSkus ?? [],
     lastSearchQueries: state.lastSearchQueries ?? [],
+    riskPersonaId: state.riskPersonaId ?? "honest",
+    screenAs: state.screenAs ?? null,
   };
 }
 
@@ -128,6 +132,8 @@ export function stateFromSnapshot(snapshot: ChatThreadSnapshot): BuyerFlowState 
     cartQty: snapshot.cartQty ?? {},
     flaggedSkus: snapshot.flaggedSkus ?? [],
     lastSearchQueries: snapshot.lastSearchQueries ?? [],
+    riskPersonaId: snapshot.riskPersonaId ?? "honest",
+    screenAs: snapshot.screenAs ?? null,
     selectedId: snapshot.selectedId,
     rail: snapshot.rail,
     snowtrace: snapshot.snowtrace,

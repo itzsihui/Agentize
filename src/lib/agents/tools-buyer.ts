@@ -5,6 +5,8 @@ import { registerExactEvmScheme } from "@x402/evm/exact/client";
 import type { PaymentRequired, PaymentRequirements } from "@x402/core/types";
 import { resolveBuyerTarget } from "@/lib/agents/discover";
 import { config, explorerTx, toAtomic, toPaymentAmount } from "@/lib/config";
+import { screenPayToForBuyer } from "@/lib/intercepta/policy";
+import { resolveAllowedScreenAs } from "@/lib/intercepta/personas";
 import { emit } from "@/lib/protocol/events";
 
 export type BuyerStep = {
@@ -57,10 +59,13 @@ export async function payX402Tool(args: {
   product?: string;
   quote?: PayQuote;
   buyerUid?: string;
+  /** Allowlisted demo persona — merchant screens this mainnet address. */
+  screenAs?: string;
 }): Promise<{ steps: BuyerStep[]; receipt?: BuyerReceipt }> {
   const steps: BuyerStep[] = [];
   const quote = args.quote;
   const buyerUid = args.buyerUid?.trim() || undefined;
+  const screenAs = resolveAllowedScreenAs(args.screenAs);
 
   const resolved = await resolveBuyerTarget({
     slug: quote?.storeSlug || args.slug,
@@ -191,6 +196,22 @@ export async function payX402Tool(args: {
     text: "Capability checks passed: payTo + amount match locked quote",
   });
 
+  const payToVerdict = await screenPayToForBuyer(accept.payTo.trim());
+  steps.push({
+    type: payToVerdict.decision === "refuse" ? "error" : "info",
+    text: `Intercepta payTo ${payToVerdict.decision} · ${payToVerdict.reasons[0] || accept.payTo}`,
+  });
+  if (payToVerdict.decision === "refuse") {
+    return { steps };
+  }
+
+  if (screenAs) {
+    steps.push({
+      type: "info",
+      text: `Demo persona: merchant will Intercepta-screen ${screenAs} (Sepolia signer unchanged)`,
+    });
+  }
+
   const payer = buildPayerClient();
   if (!payer) {
     emit({
@@ -260,6 +281,7 @@ export async function payX402Tool(args: {
       quantity: 1,
       orderId,
       buyerUid,
+      ...(screenAs ? { screenAs } : {}),
     }),
   });
   const secondText = await second.text();
@@ -280,10 +302,20 @@ export async function payX402Tool(args: {
   if (receipt.txHash && !receipt.explorerUrl) {
     receipt.explorerUrl = explorerTx(String(receipt.txHash));
   }
-  steps.push({
-    type: second.ok ? "success" : "error",
-    text: `HTTP ${second.status} ${second.ok ? "receipt unlocked" : JSON.stringify(receipt)}`,
-  });
+  const intercepta = receipt.intercepta as
+    | { decision?: string; reasons?: string[] }
+    | undefined;
+  if (!second.ok && intercepta?.reasons?.length) {
+    steps.push({
+      type: "error",
+      text: `Merchant Intercepta ${intercepta.decision || "blocked"}: ${intercepta.reasons.join(" · ")}`,
+    });
+  } else {
+    steps.push({
+      type: second.ok ? "success" : "error",
+      text: `HTTP ${second.status} ${second.ok ? "receipt unlocked" : JSON.stringify(receipt)}`,
+    });
+  }
   if (second.ok && receipt.explorerUrl) {
     steps.push({ type: "success", text: receipt.explorerUrl });
   } else if (second.ok && receipt.txHash) {

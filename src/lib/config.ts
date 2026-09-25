@@ -61,6 +61,32 @@ export const config = {
   },
 };
 
+/** Intercepta / Web3 Antivirus — live AML screen inside x402. */
+export const interceptaConfig = {
+  get apiKey() {
+    return process.env.INTERCEPTA_API_KEY?.trim() || undefined;
+  },
+  baseUrl: env("INTERCEPTA_BASE_URL", "https://api.web3antivirus.io").replace(
+    /\/$/,
+    "",
+  ),
+  /** When true, scan errors do not block settle. Default fail-closed. */
+  get failOpen() {
+    return process.env.INTERCEPTA_FAIL_OPEN === "true";
+  },
+  /** Script fallback: force this mainnet address into the seller screen. */
+  get forceScreenAddress() {
+    return process.env.INTERCEPTA_FORCE_SCREEN_ADDRESS?.trim() || undefined;
+  },
+  get demoPersonasJson() {
+    return process.env.INTERCEPTA_DEMO_PERSONAS?.trim() || undefined;
+  },
+  /** Accept allowlisted `screenAs` from the buyer demo picker. */
+  get demoMode() {
+    return process.env.INTERCEPTA_DEMO_MODE !== "false";
+  },
+};
+
 export function explorerTx(hash: string) {
   return `${config.explorerBase}/tx/${hash}`;
 }

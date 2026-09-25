@@ -1,4 +1,8 @@
-import { config, explorerTx, fromAtomic, toAtomic } from "@/lib/config";
+import { config, explorerTx, fromAtomic, interceptaConfig, toAtomic } from "@/lib/config";
+import { extractPayerAddress } from "@/lib/intercepta/payer";
+import { resolveAllowedScreenAs } from "@/lib/intercepta/personas";
+import { screenPayerForMerchant } from "@/lib/intercepta/policy";
+import type { InterceptaVerdict } from "@/lib/intercepta/types";
 import { renderAgentCard } from "@/lib/protocol/agent-card";
 import { renderCatalog } from "@/lib/protocol/catalog";
 import { emit } from "@/lib/protocol/events";
@@ -92,6 +96,7 @@ export async function handleBuy(slug: string, request: Request) {
     quantity?: number;
     orderId?: string;
     buyerUid?: string;
+    screenAs?: string;
   };
   const sku =
     store.skus.find((item) => item.id === body.skuId) ?? store.skus[0];
@@ -171,6 +176,68 @@ export async function handleBuy(slug: string, request: Request) {
     });
   }
 
+  const payer = extractPayerAddress(payload);
+  const screenAs =
+    interceptaConfig.demoMode
+      ? resolveAllowedScreenAs(body.screenAs)
+      : null;
+  const force = resolveAllowedScreenAs(interceptaConfig.forceScreenAddress);
+  const screenAddress = screenAs || force || payer;
+
+  if (!screenAddress) {
+    requirements.error = "Intercepta: could not resolve payer address";
+    emit({
+      status: 402,
+      method: "POST",
+      path: `/s/${slug}/buy`,
+      store: slug,
+      orderId,
+      rail: "x402",
+      message: "402 Intercepta blocked: missing payer address",
+    });
+    return new Response(JSON.stringify(requirements, null, 2), {
+      status: 402,
+      headers: paymentRequiredHeaders(requirements),
+    });
+  }
+
+  const verdict = await screenPayerForMerchant(screenAddress);
+  if (verdict.decision !== "allow") {
+    await persistInterceptaHold({
+      orderId,
+      slug,
+      skuId: sku.id,
+      quantity,
+      amountAtomic,
+      buyerUid: body.buyerUid?.trim() || existing?.buyerUid,
+      createdAt: existing?.createdAt,
+      verdict,
+    });
+    requirements.error = `Intercepta ${verdict.decision}: ${verdict.reasons[0] || "dirty payer"}`;
+    const blocked = {
+      ...requirements,
+      intercepta: {
+        decision: verdict.decision,
+        reasons: verdict.reasons,
+        toxicScore: verdict.toxicScore,
+        payer: verdict.screenedAddress,
+      },
+    };
+    emit({
+      status: 402,
+      method: "POST",
+      path: `/s/${slug}/buy`,
+      store: slug,
+      orderId,
+      rail: "x402",
+      message: `402 Intercepta blocked payer ${verdict.screenedAddress}: ${verdict.reasons[0] || verdict.decision}`,
+    });
+    return new Response(JSON.stringify(blocked, null, 2), {
+      status: 402,
+      headers: paymentRequiredHeaders(requirements),
+    });
+  }
+
   const verified = await verifyAndSettle({
     paymentHeader: signature.trim(),
     paymentRequirements: requirements.accepts[0],
@@ -205,6 +272,12 @@ export async function handleBuy(slug: string, request: Request) {
     explorerUrl: verified.explorerUrl,
     buyerUid:
       body.buyerUid?.trim() || existing?.buyerUid || undefined,
+    intercepta: {
+      decision: verdict.decision,
+      reasons: verdict.reasons,
+      toxicScore: verdict.toxicScore,
+      screenedAddress: verdict.screenedAddress,
+    },
     createdAt: existing?.createdAt ?? new Date().toISOString(),
     paidAt: new Date().toISOString(),
   };
@@ -215,15 +288,15 @@ export async function handleBuy(slug: string, request: Request) {
     await repo.putStore(store);
   }
 
-  emit({
-    status: 200,
-    method: "POST",
-    path: `/s/${slug}/buy`,
-    store: slug,
-    orderId,
-    rail: "x402",
-    message: `HTTP 200 receipt ${txHash}`,
-  });
+    emit({
+      status: 200,
+      method: "POST",
+      path: `/s/${slug}/buy`,
+      store: slug,
+      orderId,
+      rail: "x402",
+      message: `HTTP 200 receipt ${txHash} · Intercepta allow score ${verdict.toxicScore ?? 0}`,
+    });
   return json(receipt(paid, store));
 }
 
@@ -329,6 +402,36 @@ export async function handleOrder(slug: string, id: string) {
   return json(receipt(order, store));
 }
 
+async function persistInterceptaHold(args: {
+  orderId: string;
+  slug: string;
+  skuId: string;
+  quantity: number;
+  amountAtomic: string;
+  buyerUid?: string;
+  createdAt?: string;
+  verdict: InterceptaVerdict;
+}) {
+  const existing = await repo.getOrder(args.orderId);
+  await repo.putOrder({
+    id: args.orderId,
+    slug: args.slug,
+    skuId: args.skuId,
+    quantity: args.quantity,
+    amountAtomic: args.amountAtomic,
+    status: "failed",
+    rail: "x402",
+    buyerUid: args.buyerUid || existing?.buyerUid,
+    intercepta: {
+      decision: args.verdict.decision,
+      reasons: args.verdict.reasons,
+      toxicScore: args.verdict.toxicScore,
+      screenedAddress: args.verdict.screenedAddress,
+    },
+    createdAt: existing?.createdAt ?? args.createdAt ?? new Date().toISOString(),
+  });
+}
+
 function receipt(order: Order, store?: StoreRecord | null) {
   return {
     type: "agentize.receipt",
@@ -343,6 +446,7 @@ function receipt(order: Order, store?: StoreRecord | null) {
     explorerUrl:
       order.explorerUrl ?? (order.txHash ? explorerTx(order.txHash) : undefined),
     mandate: order.mandate,
+    intercepta: order.intercepta,
     paidAt: order.paidAt,
     merchant: store
       ? {

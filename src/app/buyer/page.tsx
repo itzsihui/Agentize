@@ -15,6 +15,10 @@ import { readDemoSession, writeDemoSession } from "@/lib/demo-session";
 import { ProductPayModal } from "./_components/product-pay-modal";
 import { CartPayModal } from "./_components/cart-pay-modal";
 import { ChatHistorySidebar } from "./_components/chat-history-sidebar";
+import {
+  InterceptaPersonaPicker,
+  type InterceptaPersonaOption,
+} from "./_components/intercepta-persona-picker";
 import { SalespersonChat } from "./_components/salesperson-chat";
 import {
   catalogResultMessage,
@@ -190,6 +194,8 @@ export default function BuyerPage() {
             cartQty: {} as Record<string, number>,
             flaggedSkus: [],
             lastSearchQueries: [] as string[],
+            riskPersonaId: "honest" as string | null,
+            screenAs: null as string | null,
           }
         : null;
       storeThreads = createDefaultStore(seed);
@@ -333,6 +339,40 @@ export default function BuyerPage() {
     activeThreadIdRef.current = thread.id;
     applyThreadState(createInitialState());
   }, [applyThreadState, saveCurrentThreadSnapshot]);
+
+  const handleSelectPersona = useCallback(
+    (persona: InterceptaPersonaOption) => {
+      saveCurrentThreadSnapshot();
+      const malicious = persona.id !== "honest" && Boolean(persona.address);
+      const nextState = createInitialState();
+      nextState.riskPersonaId = persona.id;
+      nextState.screenAs = malicious ? persona.address || null : null;
+      nextState.messages = [
+        {
+          role: "assistant",
+          content: malicious
+            ? `Acting as malicious buyer · ${persona.label} · ${persona.address?.slice(0, 6)}…${persona.address?.slice(-4)}. Intercepta will screen this mainnet address before the merchant settles. Settlement still uses the demo Sepolia key.`
+            : "Honest buyer session. Intercepta will screen your real payer wallet before the merchant accepts USDC.",
+        },
+      ];
+      const thread = emptyThread({
+        title: malicious ? `Malicious · ${persona.label}` : "Honest buyer",
+        snapshot: snapshotFromState(nextState),
+      });
+      const nextThreads = [thread, ...threadsRef.current];
+      threadsRef.current = nextThreads;
+      setThreads(sortThreads(nextThreads));
+      writeChatThreads({
+        activeId: thread.id,
+        threads: nextThreads,
+        sidebarOpen: sidebarPinnedRef.current,
+      });
+      setActiveThreadId(thread.id);
+      activeThreadIdRef.current = thread.id;
+      applyThreadState(nextState);
+    },
+    [applyThreadState, saveCurrentThreadSnapshot],
+  );
 
   const handleSelectThread = useCallback(
     (id: string) => {
@@ -989,6 +1029,7 @@ export default function BuyerPage() {
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
                   buyerUid: getBuyerCloudSyncUid() || undefined,
+                  screenAs: stateRef.current.screenAs || undefined,
                   quote: {
                     storeSlug: quote.storeSlug,
                     skuId: quote.skuId,
@@ -1212,6 +1253,26 @@ export default function BuyerPage() {
           </p>
         ) : null}
 
+        <InterceptaPersonaPicker
+          activeId={state.riskPersonaId}
+          onSelect={handleSelectPersona}
+        />
+
+        {state.screenAs ? (
+          <p className="shrink-0 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-foreground/80">
+            Acting as malicious buyer ·{" "}
+            <span className="font-medium">
+              {state.riskPersonaId || "risk persona"}
+            </span>{" "}
+            ·{" "}
+            <span className="font-mono">
+              {state.screenAs.slice(0, 6)}…{state.screenAs.slice(-4)}
+            </span>
+            . Merchant Intercepta screens this mainnet address; Sepolia settle
+            key is unchanged.
+          </p>
+        ) : null}
+
         {state.error ? (
           <p className="shrink-0 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
             {state.error}
@@ -1315,6 +1376,12 @@ export default function BuyerPage() {
             }))
           }
           onPay={() => void authorizePurchaseSingle()}
+          screenAs={state.screenAs}
+          personaLabel={
+            state.screenAs
+              ? state.riskPersonaId || "malicious"
+              : "Honest buyer"
+          }
         />
 
         <CartPayModal

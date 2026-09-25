@@ -372,6 +372,7 @@ function itemToOrder(item: Record<string, unknown>): Order {
     explorerUrl: item.explorerUrl ? String(item.explorerUrl) : undefined,
     mandate: item.mandate as CardMandate | undefined,
     buyerUid: item.buyerUid ? String(item.buyerUid) : undefined,
+    intercepta: item.intercepta as Order["intercepta"],
     createdAt: String(item.createdAt),
     paidAt: item.paidAt ? String(item.paidAt) : undefined,
   };

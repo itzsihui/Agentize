@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import type { MarketProductPick, PaymentRail } from "../_lib/buyer-flow";
+import { InterceptaRiskBadge } from "./intercepta-risk-badge";
 
 export function PaymentConsentModal({
   open,
@@ -106,6 +107,12 @@ export function PaymentConsentModal({
               </>
             )}
           </div>
+          {!isVisa ? (
+            <InterceptaRiskBadge
+              address={product.merchantAddress}
+              personaLabel="payTo"
+            />
+          ) : null}
         </div>
 
         <div className="flex justify-end gap-2 border-t border-border px-5 py-3">

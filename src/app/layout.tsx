@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Syne } from "next/font/google";
+import {
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  Space_Grotesk,
+  Syne,
+} from "next/font/google";
 import "./globals.css";
 
 const ibmSans = IBM_Plex_Sans({
@@ -20,6 +25,12 @@ const syne = Syne({
   weight: ["500", "600", "700", "800"],
 });
 
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Agentize | Open agent storefronts",
   description:
@@ -30,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${ibmSans.variable} ${ibmMono.variable} ${syne.variable} h-full antialiased`}
+      className={`${ibmSans.variable} ${ibmMono.variable} ${syne.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background font-sans text-foreground">
         {children}

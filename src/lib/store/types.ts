@@ -57,6 +57,13 @@ export type CardMandate = {
   burnedAt?: string;
 };
 
+export type OrderIntercepta = {
+  decision: "allow" | "refuse" | "hold";
+  reasons: string[];
+  toxicScore?: number;
+  screenedAddress?: string;
+};
+
 export type Order = {
   id: string;
   slug: string;
@@ -70,6 +77,8 @@ export type Order = {
   mandate?: CardMandate;
   /** Firebase buyer uid when known at settle. */
   buyerUid?: string;
+  /** Live Intercepta verdict at accept/refuse time. */
+  intercepta?: OrderIntercepta;
   createdAt: string;
   paidAt?: string;
 };
