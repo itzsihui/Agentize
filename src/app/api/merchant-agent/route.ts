@@ -5,6 +5,11 @@ import {
   type MerchantDraftLine,
 } from "@/lib/inventory/parse";
 
+import {
+  applyListingGateReply,
+  resolveListingGate,
+} from "@/lib/world/listing-gate";
+
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -35,6 +40,7 @@ export async function POST(request: Request) {
       boundWalletAddress?: string | null;
       listOnMarket?: boolean;
     };
+    const gate = await resolveListingGate(request, body);
     const result = await runMerchantAgent({
       message: body.message,
       csv: body.csv,
@@ -42,14 +48,14 @@ export async function POST(request: Request) {
       draft: normalizeDraft(body.draft),
       prices: body.prices,
       merchantAuth: body.merchantAuth,
-      ownerUid: body.ownerUid,
+      ownerUid: gate.ownerUid,
       merchantDisplayName: body.merchantDisplayName,
       visaReceive: body.visaReceive,
       existingSlug: body.existingSlug,
       boundWalletAddress: body.boundWalletAddress,
-      listOnMarket: body.listOnMarket,
+      listOnMarket: gate.listOnMarket,
     });
-    return Response.json(result);
+    return Response.json(applyListingGateReply(result, gate.blocked));
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Merchant agent failed";
