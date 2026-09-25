@@ -11,6 +11,15 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // World ID merchant verification — server-managed, never client-writable.
+    match /world_nullifiers/{nullifier} {
+      allow read, write: if false;
+    }
+    match /world_merchants/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     // Marketplace catalog — public read so /api/market and agents can list SKUs.
     // Authenticated merchants may publish/update their own store documents.
     match /stores/{slug} {
