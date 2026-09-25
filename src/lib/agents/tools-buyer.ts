@@ -1,8 +1,8 @@
-import { Wallet } from "xrpl";
-import {
-  XRPLPresignedPaymentPayer,
-  type PaymentRequirements,
-} from "x402-xrpl";
+import { privateKeyToAccount } from "viem/accounts";
+import { x402Client } from "@x402/core/client";
+import { x402HTTPClient } from "@x402/core/http";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import type { PaymentRequired, PaymentRequirements } from "@x402/core/types";
 import { resolveBuyerTarget } from "@/lib/agents/discover";
 import { config, explorerTx, toAtomic, toPaymentAmount } from "@/lib/config";
 import { emit } from "@/lib/protocol/events";
@@ -32,8 +32,21 @@ export type PayQuote = {
 
 export { extractRequestedProduct } from "@/lib/agents/discover";
 
+function buildPayerClient() {
+  const key = config.buyerPrivateKey;
+  if (!key) return null;
+  const account = privateKeyToAccount(key);
+  const client = new x402Client();
+  registerExactEvmScheme(client, {
+    signer: account,
+    networks: [config.network],
+    schemeOptions: { rpcUrl: config.rpcUrl },
+  });
+  return { http: new x402HTTPClient(client), account };
+}
+
 /**
- * Deterministic x402 handshake on XRPL Testnet (RLUSD).
+ * Deterministic x402 handshake on Base Sepolia (USDC / EIP-3009).
  * Prefer a locked quote (slug+skuId+price). Fuzzy message/product matching
  * remains only for legacy demo paths without a quote.
  */
@@ -124,8 +137,7 @@ export async function payX402Tool(args: {
       buyerUid,
     }),
   });
-  const challenge = (await first.json()) as {
-    accepts?: PaymentRequirements[];
+  const challenge = (await first.json()) as PaymentRequired & {
     error?: string;
   };
   steps.push({
@@ -138,13 +150,13 @@ export async function payX402Tool(args: {
     return { steps };
   }
 
-  const accept = challenge.accepts?.[0];
+  const accept = challenge.accepts?.[0] as PaymentRequirements | undefined;
   if (!accept) {
     steps.push({ type: "error", text: "402 missing accepts[]" });
     return { steps };
   }
 
-  if (accept.payTo.trim() !== expectedPayTo) {
+  if (accept.payTo.trim().toLowerCase() !== expectedPayTo.toLowerCase()) {
     steps.push({
       type: "error",
       text: `Capability check failed: 402 payTo ${accept.payTo} does not match locked merchant ${expectedPayTo}`,
@@ -165,11 +177,11 @@ export async function payX402Tool(args: {
     return { steps };
   }
 
-  const offerAtomic = toAtomic(accept.amount);
-  if (offerAtomic !== expectedAtomic) {
+  // EVM x402 exact scheme uses atomic amount on the wire.
+  if (accept.amount !== expectedAtomic) {
     steps.push({
       type: "error",
-      text: `Capability check failed: 402 amount ${accept.amount} does not match locked price ${expectedPrice} ${config.tokenSymbol} (${expectedAmount})`,
+      text: `Capability check failed: 402 amount ${accept.amount} does not match locked price ${expectedPrice} ${config.tokenSymbol} (${expectedAmount} → ${expectedAtomic} atomic)`,
     });
     return { steps };
   }
@@ -179,7 +191,8 @@ export async function payX402Tool(args: {
     text: "Capability checks passed: payTo + amount match locked quote",
   });
 
-  if (!config.buyerSeed) {
+  const payer = buildPayerClient();
+  if (!payer) {
     emit({
       status: 402,
       method: "POST",
@@ -187,40 +200,38 @@ export async function payX402Tool(args: {
       store: slug,
       orderId,
       rail: "x402",
-      message: "402 unpaid: XRPL_BUYER_SEED missing, cannot sign on XRPL Testnet",
+      message:
+        "402 unpaid: BUYER_PRIVATE_KEY missing, cannot sign USDC on Base Sepolia",
     });
     steps.push({
       type: "error",
-      text: `402 is the challenge. Add XRPL_BUYER_SEED + funded ${config.tokenSymbol} (trust line) on XRPL Testnet, then Buy again.`,
+      text: `402 is the challenge. Add BUYER_PRIVATE_KEY + funded ${config.tokenSymbol} on Base Sepolia, then Buy again.`,
     });
-    return { steps, receipt: challenge as BuyerReceipt };
-  }
-
-  let wallet: Wallet;
-  try {
-    wallet = Wallet.fromSeed(config.buyerSeed);
-  } catch {
-    steps.push({ type: "error", text: "Invalid XRPL_BUYER_SEED" });
     return { steps, receipt: challenge as BuyerReceipt };
   }
 
   steps.push({
     type: "chain",
-    text: `Signing ${config.tokenSymbol} Payment ${accept.amount} → ${accept.payTo} on XRPL Testnet (${wallet.classicAddress})`,
+    text: `Signing EIP-3009 ${config.tokenSymbol} ${expectedAmount} → ${accept.payTo} on Base Sepolia (${payer.account.address})`,
   });
 
   let paymentHeader: string;
   try {
-    const payer = new XRPLPresignedPaymentPayer({
-      wallet,
-      network: config.network === "xrpl:0" || config.network === "xrpl:2"
-        ? config.network
-        : "xrpl:1",
-      wsUrl: config.wsUrl,
-      invoiceBinding: "memos",
-    });
-    const prepared = await payer.preparePayment(accept);
-    paymentHeader = prepared.paymentHeader;
+    const paymentRequired: PaymentRequired = {
+      x402Version: challenge.x402Version ?? 2,
+      resource: challenge.resource,
+      accepts: challenge.accepts,
+      extensions: challenge.extensions,
+    };
+    const payload = await payer.http.createPaymentPayload(paymentRequired);
+    const headers = payer.http.encodePaymentSignatureHeader(payload);
+    paymentHeader =
+      headers["PAYMENT-SIGNATURE"] ||
+      headers["payment-signature"] ||
+      Object.values(headers)[0];
+    if (!paymentHeader) {
+      throw new Error("Failed to encode PAYMENT-SIGNATURE");
+    }
   } catch (error) {
     const reason = error instanceof Error ? error.message : "sign failed";
     emit({
@@ -236,7 +247,7 @@ export async function payX402Tool(args: {
     return { steps, receipt: challenge as BuyerReceipt };
   }
 
-  steps.push({ type: "chain", text: "Presigned Payment blob ready" });
+  steps.push({ type: "chain", text: "EIP-3009 authorization ready" });
 
   const second = await fetch(`${base}/buy`, {
     method: "POST",

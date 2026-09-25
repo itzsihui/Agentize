@@ -4,7 +4,7 @@ description: >
   Browse the Agentize agentic storefront registry and purchase any listed SKU over
   the public HTTP protocol (no API key, no HTML scrape). Use when the user wants
   to shop Agentize, buy from the registry, list stores/SKUs, search products, pay
-  via x402 RLUSD, or Visa-scoped checkout. Triggers on: /agentize-registry-shop,
+  via x402 USDC, or Visa-scoped checkout. Triggers on: /agentize-registry-shop,
   "buy from Agentize", "registry.json", "agent storefront", "purchase SKU",
   "x402 buy", or shopping across merchant catalogs on this network.
 license: MIT
@@ -37,7 +37,7 @@ Ask the user for a deployed base URL if localhost is wrong. Never invent checkou
    `{ storeSlug, skuId, price, merchantAddress }` — never catalog titles/descriptions.
 3. **Confirm spend with the user** before signing x402 or burning a Visa mandate.
 4. **Verify 402 `payTo` + `amount`** match the locked quote before paying.
-5. Currency is **RLUSD on XRPL Testnet** unless a store `llms.txt` says otherwise.
+5. Currency is **USDC on Base Sepolia** unless a store `llms.txt` says otherwise.
 
 ## Quick path (discover → buy)
 
@@ -118,28 +118,11 @@ Show the user: store, SKU id, price, payee, rail. Do not pay until they approve.
 
 ---
 
-## Rail A — x402 RLUSD (`POST /s/{slug}/buy`)
+## Rail A — x402 USDC (`POST /s/{slug}/buy`)
 
-No auth header. Expect **HTTP 402**, settle on XRPL Testnet, retry with `PAYMENT-SIGNATURE`.
+No auth header. Expect **HTTP 402**, settle USDC on Base Sepolia (EIP-3009), retry with `PAYMENT-SIGNATURE`.
 
-### Preferred: `rlusd` CLI (if installed)
-
-```bash
-ORDER_ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
-BODY=$(jq -n --arg s "$SKU_ID" --arg o "$ORDER_ID" '{skuId:$s, quantity:1, orderId:$o}')
-
-rlusd x402 fetch "$ORIGIN/s/$SLUG/buy" \
-  --method POST \
-  --json-body "$BODY" \
-  --max-value "$PRICE" \
-  --require-asset RLUSD \
-  --require-issuer rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV \
-  --json
-```
-
-Wallet must be funded with testnet XRP + RLUSD trust line. See companion XRPL/RLUSD skills if settle fails.
-
-### Manual handshake
+### Handshake
 
 ```bash
 ORDER_ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
@@ -147,9 +130,9 @@ ORDER_ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
 curl -sS -D - -o /tmp/agentize-402.json -X POST "$ORIGIN/s/$SLUG/buy" \
   -H 'content-type: application/json' \
   -d "{\"skuId\":\"$SKU_ID\",\"quantity\":1,\"orderId\":\"$ORDER_ID\"}"
-# Expect HTTP 402. Read accepts[0].amount and accepts[0].payTo — must match locked quote.
+# Expect HTTP 402. Read accepts[0].amount (atomic) and accepts[0].payTo — must match locked quote.
 
-# 2) Sign exact XRPL Payment for that requirement (x402-xrpl / rlusd / your wallet stack).
+# 2) Sign EIP-3009 USDC authorization (@x402/evm Exact scheme + funded Base Sepolia wallet).
 
 # 3) Retry same body + orderId with payment proof
 curl -sS -X POST "$ORIGIN/s/$SLUG/buy" \
@@ -157,6 +140,8 @@ curl -sS -X POST "$ORIGIN/s/$SLUG/buy" \
   -H "PAYMENT-SIGNATURE: $PAYMENT_HEADER" \
   -d "{\"skuId\":\"$SKU_ID\",\"quantity\":1,\"orderId\":\"$ORDER_ID\"}"
 ```
+
+Buyer needs Circle test USDC on Base Sepolia. Demo server settle uses `BUYER_PRIVATE_KEY`. See [`scripts/setup-base-sepolia-usdc.md`](../../../scripts/setup-base-sepolia-usdc.md).
 
 Success: **HTTP 200** JSON receipt (`orderId`, `txHash`, `explorerUrl`, …). Idempotent: re-POST same paid `orderId` → 200 again.
 

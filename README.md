@@ -2,7 +2,7 @@
 
 # Agentize
 
-[![XRPL](https://img.shields.io/badge/XRPL%20Testnet-RLUSD%20x402-23292F?style=for-the-badge)](#agentize)
+[![Base Sepolia](https://img.shields.io/badge/Base Sepolia%20Testnet-USDC%20x402-23292F?style=for-the-badge)](#agentize)
 [![Protocol](https://img.shields.io/badge/Open%20protocol-any%20HTTP%20agent-0B6E4F?style=for-the-badge)](#agentize)
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-agents-412991?style=for-the-badge&logo=openai&logoColor=white)](#try-it)
@@ -54,13 +54,13 @@ flowchart TB
 
 **Open protocol. Any agent. Same settle rails.**
 
-Publish once → humans shop in chat → procurement / local / personal agents hit the same endpoints → settle **RLUSD** via **HTTP 402 / x402** on XRPL Testnet.
+Publish once → humans shop in chat → procurement / local / personal agents hit the same endpoints → settle **USDC** via **HTTP 402 / x402** on Base Sepolia.
 
 ```mermaid
 flowchart LR
   publish[Publish_registry_llms_txt] --> search[GET_api_search]
   search --> anyAgent[Any_HTTP_agent]
-  anyAgent --> settle[RLUSD_x402]
+  anyAgent --> settle[USDC_x402]
 ```
 
 | Step | Surface |
@@ -79,13 +79,13 @@ flowchart LR
 ### Merchant-first
 
 - Talk inventory, drop CSV, or paste a store URL → live agent storefront  
-- Bind XRPL wallet → list on the open registry  
+- Bind Base Sepolia wallet → list on the open registry  
 - Reach **every** HTTP agent, not two chat apps  
 
 ### Buyer / any agent
 
 - Fashion salesperson clarifies intent, then ranks via `/api/search`  
-- Authorize in chat → RLUSD x402 on XRPL  
+- Authorize in chat → USDC x402 on Base Sepolia  
 - Injection-shaped listings quarantined; payee/amount stay locked  
 
 ### Governance
@@ -98,7 +98,7 @@ flowchart LR
   merchantPolicy[MerchantRailsAndFloors] --> auth
   discover[Discover] --> quarantine[Quarantine]
   quarantine --> auth
-  auth --> settle[RLUSD_x402]
+  auth --> settle[USDC_x402]
 ```
 
 ---
@@ -108,7 +108,7 @@ flowchart LR
 ```bash
 npm install
 cp .env.example .env
-# Fill XRPL_BUYER_SEED, MERCHANT_ADDRESS, Firebase, OPENAI — see scripts/setup-xrpl-rlusd.md
+# Fill BUYER_PRIVATE_KEY, MERCHANT_ADDRESS, Firebase, OPENAI — see scripts/setup-base-sepolia-usdc.md
 npm run dev
 ```
 
@@ -118,7 +118,7 @@ Open [http://localhost:3000](http://localhost:3000).
 |---|---|
 | `/` | Landing — problem → closed catalogs → open protocol |
 | `/merchant` · `/onboard` | Seller chat → publish agent storefront |
-| `/buyer` | Fashion chat → RLUSD x402 settle |
+| `/buyer` | Fashion chat → USDC x402 settle |
 | `/market` | Human + agent marketplace index |
 | `/api/search?q=` | Intent search (agents + buyer demo) |
 | `/registry.json` | Network store index |
@@ -133,7 +133,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - Node.js 20+ and npm  
 - **OpenAI API key** — buyer / merchant agents (+ Whisper)  
 - **Firebase** web config — auth / Firestore  
-- **XRPL Testnet** — funded buyer seed + RLUSD trust line (see [`scripts/setup-xrpl-rlusd.md`](./scripts/setup-xrpl-rlusd.md))
+- **Base Sepolia** — funded buyer EOA + Circle test USDC (see [`scripts/setup-base-sepolia-usdc.md`](./scripts/setup-base-sepolia-usdc.md))
 
 Without `OPENAI_API_KEY`, chat falls back to deterministic tools. Protocol endpoints (`llms.txt`, `/api/search`, HTTP **402**) still work.
 
@@ -143,9 +143,9 @@ Without `OPENAI_API_KEY`, chat falls back to deterministic tools. Protocol endpo
 |---|---|
 | `OPENAI_API_KEY` | Agents + embeddings search |
 | `NEXT_PUBLIC_FIREBASE_*` | Buyer + merchant auth |
-| `XRPL_BUYER_SEED` | Server-side x402 settle (`s…`) |
-| `MERCHANT_ADDRESS` | Default merchant payTo (`r…`) |
-| `XRPL_*` / `TOKEN_*` | Testnet RPC, facilitator, RLUSD issuer |
+| `BUYER_PRIVATE_KEY` | Server-side x402 settle (`0x…`) |
+| `MERCHANT_ADDRESS` | Default merchant payTo (`0x…`) |
+| `BASE_*` / `TOKEN_*` / `X402_FACILITATOR_URL` | Base Sepolia RPC, USDC, facilitator |
 
 ### Scripts
 

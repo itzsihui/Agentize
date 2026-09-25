@@ -12,10 +12,9 @@ import {
   type MerchantGovernance,
 } from "@/lib/firebase/merchant-auth";
 import {
-  authenticateWithXrplSeed,
-  generateMerchantWallet,
+  authenticateWithMetaMask,
   shortAddress,
-} from "@/lib/wallet/xrpl";
+} from "@/lib/wallet/ethereum";
 
 export default function MerchantSetupPage() {
   const router = useRouter();
@@ -33,8 +32,6 @@ export default function MerchantSetupPage() {
   const [busy, setBusy] = useState(false);
   const [walletBusy, setWalletBusy] = useState(false);
   const [boundWallet, setBoundWallet] = useState<string | null>(null);
-  const [seedInput, setSeedInput] = useState("");
-  const [generatedSeed, setGeneratedSeed] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -74,25 +71,15 @@ export default function MerchantSetupPage() {
     setWalletBusy(true);
     setError(null);
     try {
-      const proof = authenticateWithXrplSeed(seedInput);
+      const proof = await authenticateWithMetaMask();
       await merchant.bindWallet(proof.address);
       setBoundWallet(proof.address);
-      setSeedInput("");
-      setMessage(`XRPL receive bound: ${shortAddress(proof.address)}`);
+      setMessage(`Base Sepolia receive bound: ${shortAddress(proof.address)}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "XRPL bind failed");
+      setError(err instanceof Error ? err.message : "MetaMask bind failed");
     } finally {
       setWalletBusy(false);
     }
-  }
-
-  function onGenerateWallet() {
-    const w = generateMerchantWallet();
-    setGeneratedSeed(w.seed);
-    setSeedInput(w.seed);
-    setMessage(
-      `Generated ${shortAddress(w.address)}. Copy the seed, fund Testnet XRP + RLUSD trust line, then Bind.`,
-    );
   }
 
   async function onSave(e: FormEvent) {
@@ -102,7 +89,7 @@ export default function MerchantSetupPage() {
       return;
     }
     if (!acceptUsdc && !acceptVisa) {
-      setError("Enable at least one payment rail (RLUSD or Visa)");
+      setError("Enable at least one payment rail (USDC or Visa)");
       return;
     }
     setBusy(true);
@@ -215,12 +202,11 @@ export default function MerchantSetupPage() {
 
       <form onSubmit={(e) => void onSave(e)} className="mt-8 space-y-10">
         <section className="space-y-3">
-          <h2 className="text-sm font-medium">1. XRPL receiving address</h2>
+          <h2 className="text-sm font-medium">1. Base Sepolia receiving address</h2>
           <p className="text-xs text-foreground/55">
             Optional for the demo — skip to use{" "}
             <code className="text-[11px]">MERCHANT_ADDRESS</code> from server
-            env. Bind a family seed only if you want payouts to your own XRPL
-            Testnet wallet (seed stays in the browser).
+            env. Connect MetaMask on Base Sepolia to receive USDC x402 payouts.
           </p>
           {wallet ? (
             <p className="font-mono text-sm">
@@ -232,41 +218,19 @@ export default function MerchantSetupPage() {
           ) : (
             <p className="text-sm text-muted-foreground">Not bound yet</p>
           )}
-          <Input
-            type="password"
-            value={seedInput}
-            onChange={(e) => setSeedInput(e.target.value)}
-            placeholder="XRPL family seed (s…)"
-            className="h-10 font-mono text-sm"
-            autoComplete="off"
-          />
-          {generatedSeed ? (
-            <p className="break-all rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-[10px] text-foreground/70">
-              Save this seed offline: {generatedSeed}
-            </p>
-          ) : null}
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="outline"
-              disabled={walletBusy || !seedInput.trim()}
+              disabled={walletBusy}
               onClick={() => void onBindWallet()}
               className="h-10"
             >
               {walletBusy
                 ? "Binding…"
                 : wallet
-                  ? "Re-bind XRPL wallet"
-                  : "Bind XRPL wallet"}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={walletBusy}
-              onClick={onGenerateWallet}
-              className="h-10"
-            >
-              Generate testnet wallet
+                  ? "Re-bind MetaMask"
+                  : "Connect MetaMask"}
             </Button>
           </div>
         </section>
@@ -314,9 +278,9 @@ export default function MerchantSetupPage() {
               onChange={(e) => setAcceptUsdc(e.target.checked)}
             />
             <span>
-              Accept RLUSD (x402)
+              Accept USDC (x402)
               <span className="mt-0.5 block text-xs text-foreground/50">
-                Buyer agents can settle on XRPL Testnet to your classic address.
+                Buyer agents can settle on Base Sepolia to your 0x address.
               </span>
             </span>
           </label>
@@ -359,7 +323,7 @@ export default function MerchantSetupPage() {
             <span>
               Require price confirm before publish
               <span className="mt-0.5 block text-xs text-foreground/50">
-                The merchant agent drafts inventory but you approve RLUSD prices
+                The merchant agent drafts inventory but you approve USDC prices
                 before go-live.
               </span>
             </span>
@@ -368,7 +332,7 @@ export default function MerchantSetupPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="minPrice" className="text-xs font-medium">
-                Min unit price (RLUSD)
+                Min unit price (USDC)
               </label>
               <Input
                 id="minPrice"

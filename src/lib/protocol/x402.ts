@@ -1,18 +1,14 @@
+import { HTTPFacilitatorClient } from "@x402/core/server";
 import {
-  FacilitatorClient,
-  encodePaymentRequiredHeader,
   decodePaymentSignatureHeader,
-  type PaymentPayload,
-  type PaymentRequired,
-  type PaymentRequirements,
-} from "x402-xrpl";
-import {
-  config,
-  explorerTx,
-  toAtomic,
-  toPaymentAmount,
-  XRPL_SOURCE_TAG,
-} from "@/lib/config";
+  encodePaymentRequiredHeader,
+} from "@x402/core/http";
+import type {
+  PaymentPayload,
+  PaymentRequired,
+  PaymentRequirements,
+} from "@x402/core/types";
+import { config, explorerTx, toAtomic } from "@/lib/config";
 import type { Sku, StoreRecord } from "@/lib/store/types";
 
 export type { PaymentRequired, PaymentRequirements, PaymentPayload };
@@ -24,8 +20,9 @@ export function buildPaymentRequired(
   orderId: string,
   quantity: number,
 ): PaymentRequired {
-  const amount = toPaymentAmount(sku.price, quantity);
-  const invoiceId = `INV-${orderId}`;
+  const amount = (
+    BigInt(toAtomic(sku.price)) * BigInt(quantity)
+  ).toString();
   const accept: PaymentRequirements = {
     scheme: "exact",
     network: config.network,
@@ -35,11 +32,9 @@ export function buildPaymentRequired(
     maxTimeoutSeconds: 600,
     extra: {
       name: config.tokenSymbol,
+      version: "2",
       decimals: config.tokenDecimals,
       orderId,
-      invoiceId,
-      sourceTag: XRPL_SOURCE_TAG,
-      issuer: config.tokenIssuer,
     },
   };
   return {
@@ -55,13 +50,11 @@ export function buildPaymentRequired(
 
 /** Atomic amount for order records (micro-units). */
 export function paymentAmountAtomic(
-  store: StoreRecord,
+  _store: StoreRecord,
   sku: Sku,
   quantity: number,
 ): string {
-  return (
-    BigInt(toAtomic(sku.price)) * BigInt(quantity)
-  ).toString();
+  return (BigInt(toAtomic(sku.price)) * BigInt(quantity)).toString();
 }
 
 export function parsePaymentSignature(header: string): PaymentPayload | null {
@@ -85,37 +78,42 @@ export function parsePaymentSignature(header: string): PaymentPayload | null {
 }
 
 function facilitator() {
-  return new FacilitatorClient({ baseUrl: config.facilitatorUrl });
+  return new HTTPFacilitatorClient({ url: config.facilitatorUrl });
 }
 
 /**
- * Verify + settle a presigned XRPL Payment via the hosted facilitator.
+ * Verify + settle an EIP-3009 USDC payment via the hosted x402 facilitator.
  */
 export async function verifyAndSettle(args: {
   paymentHeader: string;
   paymentRequirements: PaymentRequirements;
 }) {
   try {
+    const payload = parsePaymentSignature(args.paymentHeader);
+    if (!payload) {
+      return { ok: false as const, reason: "Invalid PAYMENT-SIGNATURE" };
+    }
+
     const client = facilitator();
-    const verified = await client.verify({
-      paymentHeader: args.paymentHeader,
-      paymentRequirements: args.paymentRequirements,
-    });
+    const verified = await client.verify(payload, args.paymentRequirements);
     if (!verified.isValid) {
       return {
         ok: false as const,
-        reason: verified.invalidReason || "Facilitator rejected payment",
+        reason:
+          verified.invalidReason ||
+          verified.invalidMessage ||
+          "Facilitator rejected payment",
       };
     }
 
-    const settled = await client.settle({
-      paymentHeader: args.paymentHeader,
-      paymentRequirements: args.paymentRequirements,
-    });
+    const settled = await client.settle(payload, args.paymentRequirements);
     if (!settled.success || !settled.transaction) {
       return {
         ok: false as const,
-        reason: settled.errorReason || "Facilitator settle failed",
+        reason:
+          settled.errorReason ||
+          settled.errorMessage ||
+          "Facilitator settle failed",
       };
     }
 

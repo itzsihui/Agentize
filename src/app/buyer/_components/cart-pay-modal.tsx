@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { MarketProductPick, PaymentRail } from "../_lib/buyer-flow";
 
 export function CartPayModal({
@@ -22,13 +22,16 @@ export function CartPayModal({
   onPay: () => void;
   busy?: boolean;
 }) {
+  useEffect(() => {
+    if (open && rail !== "stablecoin") onRailChange("stablecoin");
+  }, [open, rail, onRailChange]);
+
   if (!open || lines.length === 0) return null;
 
   const total = lines.reduce(
     (sum, line) => sum + Number(line.price) * line.quantity,
     0,
   );
-  const isVisa = rail === "visa";
   const stores = [...new Set(lines.map((l) => l.storeSlug))];
 
   return (
@@ -88,50 +91,17 @@ export function CartPayModal({
                   </p>
                 </div>
                 <p className="shrink-0 text-sm font-medium tabular-nums">
-                  {(Number(line.price) * line.quantity).toFixed(2)} RLUSD
+                  {(Number(line.price) * line.quantity).toFixed(2)} USDC
                 </p>
               </li>
             ))}
           </ul>
 
-          <div className="mt-4 space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-foreground/50">
-              Pay with
+          <div className="mt-4 rounded-lg border border-foreground/20 bg-muted/30 px-3 py-3 text-sm">
+            <p className="font-medium">USDC · x402</p>
+            <p className="mt-0.5 text-xs text-foreground/55">
+              Base Sepolia · HTTP 402 → EIP-3009 → PAYMENT-SIGNATURE
             </p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => onRailChange("visa")}
-                className={cn(
-                  "rounded-lg border p-3 text-left text-sm transition-colors",
-                  rail === "visa"
-                    ? "border-foreground ring-1 ring-foreground"
-                    : "border-border hover:border-foreground/40",
-                )}
-              >
-                <span className="font-medium">Visa card</span>
-                <span className="mt-0.5 block text-xs text-foreground/55">
-                  Scoped card per merchant settle
-                </span>
-              </button>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => onRailChange("stablecoin")}
-                className={cn(
-                  "rounded-lg border p-3 text-left text-sm transition-colors",
-                  rail === "stablecoin"
-                    ? "border-foreground ring-1 ring-foreground"
-                    : "border-border hover:border-foreground/40",
-                )}
-              >
-                <span className="font-medium">RLUSD · x402</span>
-                <span className="mt-0.5 block text-xs text-foreground/55">
-                  XRPL Testnet per locked quote
-                </span>
-              </button>
-            </div>
           </div>
 
           <div className="mt-4 rounded-md border border-border bg-muted/40 px-3 py-3 text-[13px] leading-relaxed text-foreground/75">
@@ -139,7 +109,7 @@ export function CartPayModal({
               Locked quotes
             </p>
             <p className="mt-2 text-[12px] text-foreground/60">
-              Total <strong>{total.toFixed(2)} RLUSD</strong> across{" "}
+              Total <strong>{total.toFixed(2)} USDC</strong> across{" "}
               {stores.length} store{stores.length === 1 ? "" : "s"}. Hostile
               catalog titles cannot change payee, amount, or skip authorize on
               any line.
@@ -176,15 +146,9 @@ export function CartPayModal({
           >
             Back
           </Button>
-          <Button
-            type="button"
-            disabled={busy || !rail}
-            onClick={onPay}
-          >
+          <Button type="button" disabled={busy} onClick={onPay}>
             {busy
-              ? isVisa
-                ? "Paying Visa…"
-                : "Paying RLUSD…"
+              ? "Paying USDC…"
               : `Authorize ${lines.length} settle${lines.length === 1 ? "" : "s"}`}
           </Button>
         </div>

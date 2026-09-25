@@ -16,8 +16,8 @@ export function renderAgentCard(store: StoreRecord, origin: string) {
       symbol: config.tokenSymbol,
       decimals: config.tokenDecimals,
       asset: config.tokenAddress,
-      issuer: config.tokenIssuer,
       network: config.network,
+      chain: "Base Sepolia",
     },
     payTo: store.merchantAddress,
     endpoints: {

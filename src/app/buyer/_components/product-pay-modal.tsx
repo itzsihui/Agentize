@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { MarketProductPick, PaymentRail } from "../_lib/buyer-flow";
 
 export function ProductPayModal({
@@ -15,7 +14,6 @@ export function ProductPayModal({
   onPay,
   busy,
   receiptNote,
-  firstVisaIssue,
 }: {
   open: boolean;
   product: MarketProductPick | null;
@@ -25,7 +23,7 @@ export function ProductPayModal({
   onPay: () => void;
   busy?: boolean;
   receiptNote?: string | null;
-  /** True when buyer has never completed a Visa checkout in this demo account. */
+  /** @deprecated Visa rail removed from buyer demo UI. */
   firstVisaIssue?: boolean;
 }) {
   const [step, setStep] = useState<"detail" | "confirm">("detail");
@@ -35,16 +33,15 @@ export function ProductPayModal({
       setStep("detail");
       return;
     }
+    if (rail !== "stablecoin") onRailChange("stablecoin");
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !busy) onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, busy, onClose]);
+  }, [open, busy, onClose, rail, onRailChange]);
 
   if (!open || !product) return null;
-
-  const isVisa = rail === "visa";
 
   return (
     <div
@@ -114,7 +111,7 @@ export function ProductPayModal({
           ) : null}
           <p className="mt-3 text-base font-medium">
             {product.price}{" "}
-            <span className="text-foreground/50">RLUSD</span>
+            <span className="text-foreground/50">USDC</span>
           </p>
           {product.description ? (
             <p className="mt-2 text-sm leading-relaxed text-foreground/70">
@@ -123,50 +120,13 @@ export function ProductPayModal({
           ) : null}
 
           {step === "detail" ? (
-            <div className="mt-5 space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-foreground/50">
-                Pay with
+            <div className="mt-5 rounded-lg border border-foreground/20 bg-muted/30 px-3 py-3 text-sm">
+              <p className="font-medium">USDC · x402</p>
+              <p className="mt-0.5 text-xs text-foreground/55">
+                {product.merchantAddress
+                  ? `To ${product.merchantAddress.slice(0, 6)}…${product.merchantAddress.slice(-4)} on Base Sepolia`
+                  : "Base Sepolia · HTTP 402 → EIP-3009"}
               </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => onRailChange("visa")}
-                  className={cn(
-                    "rounded-lg border p-3 text-left text-sm transition-colors",
-                    rail === "visa"
-                      ? "border-foreground ring-1 ring-foreground"
-                      : "border-border hover:border-foreground/40",
-                  )}
-                >
-                  <span className="font-medium">Visa card</span>
-                  <span className="mt-0.5 block text-xs text-foreground/55">
-                    {product.visaReceiveLabel
-                      ? `Settles to ${product.visaReceiveLabel}`
-                      : firstVisaIssue
-                        ? "Issue a scoped card and pay"
-                        : "Agent-authorized scoped card"}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => onRailChange("stablecoin")}
-                  className={cn(
-                    "rounded-lg border p-3 text-left text-sm transition-colors",
-                    rail === "stablecoin"
-                      ? "border-foreground ring-1 ring-foreground"
-                      : "border-border hover:border-foreground/40",
-                  )}
-                >
-                  <span className="font-medium">RLUSD · x402</span>
-                  <span className="mt-0.5 block text-xs text-foreground/55">
-                    {product.merchantAddress
-                      ? `To ${product.merchantAddress.slice(0, 6)}…${product.merchantAddress.slice(-4)}`
-                      : "XRPL Testnet stablecoin"}
-                  </span>
-                </button>
-              </div>
             </div>
           ) : (
             <div className="mt-5 space-y-3">
@@ -192,14 +152,12 @@ export function ProductPayModal({
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/45">Amount</dt>
                     <dd className="text-right text-foreground">
-                      {product.price} RLUSD
+                      {product.price} USDC
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/45">Rail</dt>
-                    <dd className="text-right text-foreground">
-                      {isVisa ? "Visa scoped card" : "RLUSD · x402"}
-                    </dd>
+                    <dd className="text-right text-foreground">USDC · x402</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/45">Authorize</dt>
@@ -213,35 +171,12 @@ export function ProductPayModal({
                 </p>
               </div>
               <div className="rounded-md border border-border bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/75">
-              {isVisa ? (
-                <>
-                  {firstVisaIssue ? (
-                    <p className="mb-2">
-                      A scoped Visa card will be issued for this merchant, then
-                      burned after payment.
-                    </p>
-                  ) : null}
-                  Confirm Visa checkout: spend cap ≥{" "}
-                  <strong>{product.price}</strong> RLUSD · merchant receive{" "}
-                  <strong>
-                    {product.visaReceiveLabel || product.storeSlug}
-                  </strong>
-                  {product.visaReceiveId
-                    ? ` (${product.visaReceiveId})`
-                    : ""}
-                  . The agent will not charge until you authorize.
-                </>
-              ) : (
-                <>
-                  Confirm x402 on XRPL Testnet: transfer{" "}
-                  <strong>{product.price}</strong> RLUSD to merchant crypto
-                  receive{" "}
-                  <span className="font-mono text-xs">
-                    {product.merchantAddress || "store payTo"}
-                  </span>{" "}
-                  after HTTP 402, then unlock with PAYMENT-SIGNATURE.
-                </>
-              )}
+                Confirm x402 on Base Sepolia: transfer{" "}
+                <strong>{product.price}</strong> USDC to merchant crypto receive{" "}
+                <span className="font-mono text-xs">
+                  {product.merchantAddress || "store payTo"}
+                </span>{" "}
+                after HTTP 402, then unlock with PAYMENT-SIGNATURE.
               </div>
             </div>
           )}
@@ -266,19 +201,15 @@ export function ProductPayModal({
           {step === "detail" ? (
             <Button
               type="button"
-              disabled={busy || !rail}
+              disabled={busy}
               onClick={() => setStep("confirm")}
             >
               Continue to pay
             </Button>
           ) : (
-            <Button
-              type="button"
-              disabled={busy || !rail}
-              onClick={onPay}
-            >
+            <Button type="button" disabled={busy} onClick={onPay}>
               {busy
-                ? "Paying…"
+                ? "Paying USDC…"
                 : product.quarantined
                   ? "Authorize locked settle"
                   : "Authorize purchase"}

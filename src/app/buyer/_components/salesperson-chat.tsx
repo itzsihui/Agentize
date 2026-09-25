@@ -334,7 +334,7 @@ export function SalespersonChat({
                                 <p className="text-sm font-medium">
                                   {product.price}{" "}
                                   <span className="text-foreground/45">
-                                    RLUSD
+                                    USDC
                                   </span>
                                 </p>
                               </div>

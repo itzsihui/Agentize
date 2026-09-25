@@ -1,47 +1,42 @@
-export type ChainNetwork = "xrpl:1" | "xrpl:0" | "xrpl:2";
+import { isAddress, getAddress, type Hex } from "viem";
 
-/** Testnet RLUSD currency code (40-hex) and issuer. */
-export const RLUSD_CURRENCY =
-  "524C555344000000000000000000000000000000";
-export const RLUSD_TESTNET_ISSUER = "rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV";
-export const XRPL_SOURCE_TAG = 804681468;
+/** Circle USDC on Base Sepolia. */
+export const USDC_BASE_SEPOLIA =
+  "0x036CbD53842c5426634e7929541eC2318f3dCF7e" as const;
+
+export type ChainNetwork = "eip155:84532";
 
 function env(name: string, fallback: string) {
   return process.env[name] || fallback;
 }
 
 export const config = {
-  rpcUrl: env("XRPL_RPC_URL", "https://s.altnet.rippletest.net:51234/"),
-  wsUrl: env("XRPL_WS_URL", "wss://s.altnet.rippletest.net:51233"),
-  network: env("XRPL_NETWORK", "xrpl:1") as ChainNetwork,
+  rpcUrl: env("BASE_RPC_URL", "https://sepolia.base.org"),
+  network: env("BASE_NETWORK", "eip155:84532") as ChainNetwork,
   facilitatorUrl: env(
-    "XRPL_FACILITATOR_URL",
-    "https://xrpl-facilitator-testnet.t54.ai",
+    "X402_FACILITATOR_URL",
+    "https://x402.org/facilitator",
   ),
-  /** @deprecated Use network; retained for any leftover chainId reads. */
-  chainId: 1,
-  tokenAddress: env("TOKEN_ADDRESS", RLUSD_CURRENCY),
-  tokenIssuer: env("TOKEN_ISSUER", RLUSD_TESTNET_ISSUER),
-  tokenSymbol: env("TOKEN_SYMBOL", "RLUSD"),
+  chainId: Number(env("CHAIN_ID", "84532")),
+  tokenAddress: env("TOKEN_ADDRESS", USDC_BASE_SEPOLIA),
+  tokenSymbol: env("TOKEN_SYMBOL", "USDC"),
   tokenDecimals: Number(env("TOKEN_DECIMALS", "6")),
-  /** Demo unit price in RLUSD on XRPL Testnet. */
+  /** Demo unit price in USDC on Base Sepolia. */
   demoUnitPriceXsgd: "0.01",
   merchantAddress: env(
     "MERCHANT_ADDRESS",
-    "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+    "0x0000000000000000000000000000000000000001",
   ),
-  /** Buyer wallet seed for server-side x402 settle (family seed / secret). */
-  get buyerSeed() {
+  /** Buyer EOA private key for server-side x402 settle (EIP-3009). */
+  get buyerPrivateKey(): Hex | undefined {
     const raw =
-      process.env.XRPL_BUYER_SEED?.trim().replace(/^["']|["']$/g, "") ||
-      process.env.BUYER_SEED?.trim().replace(/^["']|["']$/g, "");
-    return raw || undefined;
+      process.env.BUYER_PRIVATE_KEY?.trim().replace(/^["']|["']$/g, "") ||
+      undefined;
+    if (!raw) return undefined;
+    const key = (raw.startsWith("0x") ? raw : `0x${raw}`) as Hex;
+    return key;
   },
-  /** @deprecated Prefer buyerSeed — kept so legacy card MCP helpers compile. */
-  get buyerPrivateKey() {
-    return undefined as `0x${string}` | undefined;
-  },
-  explorerBase: env("EXPLORER_BASE", "https://testnet.xrpl.org"),
+  explorerBase: env("EXPLORER_BASE", "https://sepolia.basescan.org"),
   /** Optional legacy Card MCP URL — unused when empty; Visa rail uses local mandate. */
   straitsxMcpUrl: env("STRAITSX_MCP_URL", ""),
   get straitsxMcpToken() {
@@ -67,10 +62,10 @@ export const config = {
 };
 
 export function explorerTx(hash: string) {
-  return `${config.explorerBase}/transactions/${hash}`;
+  return `${config.explorerBase}/tx/${hash}`;
 }
 
-/** Decimal RLUSD amount string for XRPL IOU Payment / x402 `amount`. */
+/** Human decimal amount string (display / logs). */
 export function toPaymentAmount(price: string, quantity = 1) {
   const n = Number(price) * quantity;
   if (!Number.isFinite(n) || n <= 0) {
@@ -79,7 +74,7 @@ export function toPaymentAmount(price: string, quantity = 1) {
   return n.toFixed(config.tokenDecimals).replace(/\.?0+$/, "") || n.toFixed(2);
 }
 
-/** Integer micro-units for order storage / display helpers. */
+/** Integer micro-units for x402 exact amount + order storage. */
 export function toAtomic(price: string) {
   const n = Number(price);
   if (!Number.isFinite(n) || n <= 0) {
@@ -94,4 +89,17 @@ export function fromAtomic(atomic: string) {
   }
   const v = Number(atomic) / 10 ** config.tokenDecimals;
   return v.toFixed(2);
+}
+
+export function isEvmAddress(value: string | null | undefined): boolean {
+  return Boolean(value && isAddress(value));
+}
+
+export function checksumAddress(value: string): string | null {
+  try {
+    if (!isAddress(value)) return null;
+    return getAddress(value);
+  } catch {
+    return null;
+  }
 }

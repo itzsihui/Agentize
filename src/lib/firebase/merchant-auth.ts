@@ -23,11 +23,11 @@ export type VisaReceiveAccount = {
  * Complements buyer spend governance — this is what the store will accept.
  */
 export type MerchantGovernance = {
-  /** Accept RLUSD / x402 settlements on XRPL */
+  /** Accept USDC / x402 settlements on Base Sepolia */
   acceptUsdc: boolean;
   /** Accept Visa scoped-card rail */
   acceptVisa: boolean;
-  /** Floor unit price agents must respect (RLUSD) */
+  /** Floor unit price agents must respect (USDC) */
   minUnitPriceUsdc: number | null;
   /** Cap quantity per agent checkout */
   maxUnitsPerOrder: number | null;
@@ -50,7 +50,7 @@ export const DEFAULT_MERCHANT_GOVERNANCE: MerchantGovernance = {
 export type MerchantProfile = {
   displayName: string;
   email: string;
-  /** XRPL classic r… receive address */
+  /** Base Sepolia 0x receive address */
   walletAddress?: string;
   visaReceive?: VisaReceiveAccount;
   governance?: MerchantGovernance;
@@ -362,7 +362,7 @@ export async function clearMerchantOnboardingDraft(uid: string): Promise<void> {
 }
 
 export function merchantReceivingComplete(profile: MerchantProfile | null) {
-  // XRPL payTo can fall back to MERCHANT_ADDRESS env — Visa label is the hard gate.
+  // Base Sepolia payTo can fall back to MERCHANT_ADDRESS env — Visa label is the hard gate.
   return Boolean(profile?.visaReceive?.accountLabel);
 }
 

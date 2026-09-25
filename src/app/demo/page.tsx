@@ -29,7 +29,7 @@ export default function DemoPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           merchantMessage:
-            "Create a store. I'm selling 50 VISA Hackathon Shirts for 0.01 RLUSD each.",
+            "Create a store. I'm selling 50 VISA Hackathon Shirts for 0.01 USDC each.",
           buyerMessage:
             "Agent, go to /s/hackathon-shirts and buy a hackathon shirt.",
           rails: ["x402", "card"],
@@ -58,7 +58,7 @@ export default function DemoPage() {
           ...prev,
           {
             role: "pitch",
-            text: `XRPL: ${data.pitch?.xrpl || data.pitch?.avalanche}`,
+            text: `Base Sepolia: ${data.pitch?.xrpl || data.pitch?.avalanche}`,
           },
           { role: "pitch", text: `VISA: ${data.pitch?.straitsx}` },
           { role: "pitch", text: `AWS: ${data.pitch?.aws}` },
@@ -118,7 +118,7 @@ export default function DemoPage() {
 
         {explorerUrl ? (
           <p className="mt-4 text-sm">
-            XRPL explorer:{" "}
+            Base Sepolia explorer:{" "}
             <a
               className="text-primary underline-offset-4 hover:underline"
               href={explorerUrl}
