@@ -26,7 +26,7 @@ import {
 } from "@/lib/inventory/fashion";
 
 export type ChatLine = {
-  role: "merchant" | "borneo";
+  role: "merchant" | "agentize";
   text: string;
   llm?: string;
 };

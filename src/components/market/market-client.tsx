@@ -160,7 +160,7 @@ export function MarketClient() {
                 Fashion marketplace
               </p>
               <h1 className="mt-2 font-[family-name:var(--font-syne)] text-4xl font-semibold tracking-tight text-[#1a1f16] md:text-5xl">
-                Shop Borneo
+                Shop Agentize
               </h1>
               <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-[#1a1f16]/70">
                 Apparel, accessories, and shoes. Checkout still runs through the
@@ -340,7 +340,7 @@ export function MarketClient() {
                     previewPath === "/llms.txt" && "bg-neutral-800",
                   )}
                 >
-                  <span className="text-neutral-200">Borneo network index</span>
+                  <span className="text-neutral-200">Agentize network index</span>
                   <span className="text-emerald-400/90">/llms.txt</span>
                 </button>
               </li>

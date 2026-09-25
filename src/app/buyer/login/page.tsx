@@ -105,7 +105,7 @@ export default function BuyerLoginPage() {
           href="/merchant/login"
           className="text-foreground/70 underline-offset-2 hover:underline"
         >
-          Sell on Borneo
+          Sell on Agentize
         </Link>
       </p>
     </main>

@@ -23,7 +23,7 @@ export type RegistryIndexEntry = {
   materials: string[];
   /** First N SKU titles for keyword shortlist. */
   sampleTitles: string[];
-  /** Verified-purchase aggregate (native Borneo reviews). */
+  /** Verified-purchase aggregate (native Agentize reviews). */
   ratingAvg: number | null;
   ratingCount: number;
   updatedAt: string;

@@ -84,7 +84,7 @@ export default function MerchantSignupPage() {
             onChange={(e) => setDisplayName(e.target.value)}
             required
             className="h-10"
-            placeholder="e.g. Borneo Apparel"
+            placeholder="e.g. Agentize Apparel"
           />
         </div>
         <div className="space-y-2">

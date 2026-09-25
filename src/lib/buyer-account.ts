@@ -1,6 +1,6 @@
 /** Session / local storage helpers for the demo buyer account. */
 
-const ACCOUNT_KEY = "borneo.buyer.account.v1";
+const ACCOUNT_KEY = "agentize.buyer.account.v1";
 
 export type GovernancePolicy = {
   maxPerTransaction: number | null;
@@ -229,7 +229,7 @@ export function writeBuyerAccount(account: BuyerAccount) {
     void import("@/lib/firebase/buyer-auth")
       .then(({ saveBuyerToCloud }) => saveBuyerToCloud(cloudSyncUid!, account))
       .catch((err) => {
-        console.error("[borneo] Firestore sync failed", err);
+        console.error("[agentize] Firestore sync failed", err);
       });
   }
 }
@@ -244,11 +244,11 @@ export function clearBuyerAccount() {
   // Drop buyer shop session; leave merchant onboard / lastStore intact
   try {
     if (typeof sessionStorage === "undefined") return;
-    const raw = sessionStorage.getItem("borneo.demo.session.v2");
+    const raw = sessionStorage.getItem("agentize.demo.session.v2");
     if (!raw) return;
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     delete parsed.buyer;
-    sessionStorage.setItem("borneo.demo.session.v2", JSON.stringify(parsed));
+    sessionStorage.setItem("agentize.demo.session.v2", JSON.stringify(parsed));
   } catch {
     // ignore
   }

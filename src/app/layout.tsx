@@ -21,7 +21,7 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "Borneo | Open agent storefronts",
+  title: "Agentize | Open agent storefronts",
   description:
     "Agent-ready stores open to any HTTP agent — not locked to ChatGPT or Claude. Shoppers discover via /api/search and settle RLUSD in chat via x402. Catalog text cannot change payee, amount, or skip authorize.",
 };

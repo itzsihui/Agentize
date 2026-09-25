@@ -34,7 +34,7 @@ export function ProductPicker({
           Choose a piece
         </h2>
         <p className="mt-1 text-xs text-foreground/55">
-          Ranked from the Borneo network · select one to continue
+          Ranked from the Agentize network · select one to continue
         </p>
       </div>
       <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">

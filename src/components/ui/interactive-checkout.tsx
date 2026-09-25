@@ -12,7 +12,7 @@ export type CheckoutProduct = {
   category: string;
   image: string;
   color?: string;
-  /** Pass-through for Borneo settle (storeSlug, merchant, etc.). */
+  /** Pass-through for Agentize settle (storeSlug, merchant, etc.). */
   meta?: Record<string, unknown>;
 };
 
@@ -39,7 +39,7 @@ function money(n: number, currency: string) {
 }
 
 /**
- * Kokonut-style interactive checkout — adapted for Borneo chat commerce.
+ * Kokonut-style interactive checkout — adapted for Agentize chat commerce.
  * @see https://21st.dev/@kokonutd/components/interactive-checkout
  */
 export function InteractiveCheckout({

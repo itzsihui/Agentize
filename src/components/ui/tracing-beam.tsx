@@ -103,7 +103,7 @@ export const TracingBeam = ({
               y1={y1}
               y2={y2}
             >
-              {/* Borneo jade → ember (not cyan/purple Aceternity default) */}
+              {/* Agentize jade → ember (not cyan/purple Aceternity default) */}
               <stop stopColor="#3d9b72" stopOpacity="0" />
               <stop stopColor="#3d9b72" />
               <stop offset="0.325" stopColor="#e8c39a" />

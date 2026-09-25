@@ -106,7 +106,7 @@ export function BuyerShell({ children }: { children: React.ReactNode }) {
             href="/merchant/login"
             className="text-foreground/70 underline-offset-2 hover:underline"
           >
-            Sell on Borneo
+            Sell on Agentize
           </Link>
         </p>
       </div>

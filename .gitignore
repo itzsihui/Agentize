@@ -41,10 +41,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Hackathon XRPL skill vendored clones (refreshed locally)
-ripple/skills/xrpl-agentic-resources/ows/
-ripple/skills/xrpl-agentic-resources/rlusd-skills/
-ripple/skills/xrpl-agentic-resources/x402-secure/
-ripple/skills/xrpl-agentic-resources/xrpl-dev-portal/
-ripple/skills/xrpl-agentic-resources/XRPL-Standards/

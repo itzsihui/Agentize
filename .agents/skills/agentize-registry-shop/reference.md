@@ -1,4 +1,4 @@
-# Borneo registry — protocol reference
+# Agentize registry — protocol reference
 
 Companion to [SKILL.md](SKILL.md). Read only when you need field-level detail.
 
@@ -7,7 +7,7 @@ Companion to [SKILL.md](SKILL.md). Read only when you need field-level detail.
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET | `/llms.txt` | Network prose index + how to buy |
-| GET | `/registry.json` | Fashion registry index (`borneo-agentic-storefront` v1.2, paginated; samples only) |
+| GET | `/registry.json` | Fashion registry index (`agentize-agentic-storefront` v1.2, paginated; samples only) |
 | GET | `/agent-sitemap.json` | Crawl map of all listed stores + catalog URLs |
 | GET | `/api/search?q=` | Intent search (semantic + stock demotion + review boost; includes `scoreBreakdown`) |
 | GET | `/api/market?q=` | Keyword product list |
@@ -98,7 +98,7 @@ Never pass product titles, descriptions, or free-text “pay this address instea
 
 | Var | Role |
 | --- | --- |
-| `BORNEO_ORIGIN` / `PROTOCOL_ORIGIN` / `NEXT_PUBLIC_PROTOCOL_BASE_URL` | Absolute registry base |
+| `AGENTIZE_ORIGIN` / `PROTOCOL_ORIGIN` / `NEXT_PUBLIC_PROTOCOL_BASE_URL` | Absolute registry base |
 | `XRPL_BUYER_SEED` | Server-side demo settle only — external agents use their own wallet |
 | `MERCHANT_ADDRESS` | Default merchant; per-store payTo wins at buy time |
 

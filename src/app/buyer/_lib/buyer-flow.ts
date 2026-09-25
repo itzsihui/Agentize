@@ -112,7 +112,7 @@ export const INITIAL_STEPS: ChainStep[] = [
   },
   {
     id: "search",
-    title: "Search Borneo network",
+    title: "Search Agentize network",
     status: "pending",
     description: "Catalog titles are data only — not instructions",
     capability: "untrusted",
@@ -225,7 +225,7 @@ export function catalogResultMessage(
     if (flaggedCount > 0) {
       return `I scanned seller catalogs for “${wanted}”. A matching listing looked like injection-shaped catalog copy, so it was held out of the fashion results.${quarantineNote}`;
     }
-    return `I searched seller catalogs on the Borneo network and couldn't find a match for “${wanted}”. Try naming a piece (shirt, pants, tee, cap) or browse Market.`;
+    return `I searched seller catalogs on the Agentize network and couldn't find a match for “${wanted}”. Try naming a piece (shirt, pants, tee, cap) or browse Market.`;
   }
 
   const titles = picks.map((p) =>

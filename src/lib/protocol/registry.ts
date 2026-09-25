@@ -80,10 +80,10 @@ export function renderRegistryJson(
 ) {
   const listed = buildRegistryStores(stores, origin);
   return {
-    protocol: "borneo-agentic-storefront",
+    protocol: "agentize-agentic-storefront",
     version: "1.1",
     description:
-      "Borneo fashion-focused network registry. Agents: start here, then open each store llms.txt. Do not scrape HTML. Use ?cursor=&limit= for pagination.",
+      "Agentize fashion-focused network registry. Agents: start here, then open each store llms.txt. Do not scrape HTML. Use ?cursor=&limit= for pagination.",
     currency: config.tokenSymbol,
     vertical: "fashion",
     market: `${origin}/market`,
@@ -147,10 +147,10 @@ export function renderRegistryJsonFromIndex(
     };
   });
   return {
-    protocol: "borneo-agentic-storefront",
+    protocol: "agentize-agentic-storefront",
     version: "1.2",
     description:
-      "Borneo fashion registry index. Sample SKUs only (catalogComplete:false) — always GET catalog.json for full inventory. Prefer /api/search for intent. Paginate with ?cursor=&limit=. Crawl map: /agent-sitemap.json.",
+      "Agentize fashion registry index. Sample SKUs only (catalogComplete:false) — always GET catalog.json for full inventory. Prefer /api/search for intent. Paginate with ?cursor=&limit=. Crawl map: /agent-sitemap.json.",
     currency: config.tokenSymbol,
     vertical: "fashion",
     market: `${origin}/market`,
@@ -175,7 +175,7 @@ export function renderRegistryJsonFromIndex(
 export function renderRootLlmsTxt(stores: StoreRecord[], origin: string) {
   const listed = buildRegistryStores(stores, origin);
   const lines: string[] = [
-    `# Borneo — agent storefront network`,
+    `# Agentize — agent storefront network`,
     ``,
     `> Generative discovery for agents on the Agentic Storefront Protocol.`,
     `> Humans browse ${origin}/market. Agents read this file and ${origin}/registry.json.`,

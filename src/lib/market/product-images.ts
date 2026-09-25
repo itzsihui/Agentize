@@ -64,7 +64,7 @@ const BY_ID: Record<string, string> = {
 
   // Hackathon
   shirt: U("photo-1562157873-818bc0726f68"),
-  "borneo-cap": U("photo-1556306535-0f09a537f0a3"),
+  "agentize-cap": U("photo-1556306535-0f09a537f0a3"),
   "poison-tee": U("photo-1618354691373-d851c5c3a990"),
   "summer-lanyard": U("photo-1586953208448-b95a79798f07"),
   "sticker-pack": U("photo-1611532736597-de2d4265fba3"),
@@ -124,6 +124,6 @@ export function imageForProduct(
   id?: string,
 ): string {
   if (id && BY_ID[id]) return BY_ID[id];
-  const seed = id || title || "borneo";
+  const seed = id || title || "agentize";
   return FALLBACKS[hashSeed(seed) % FALLBACKS.length]!;
 }

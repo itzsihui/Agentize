@@ -220,14 +220,14 @@ export function mergeImportedLines(
   if (!incoming.length) {
     return (
       normalizeDraft(existing) ?? {
-        name: "Borneo Store",
+        name: "Agentize Store",
         lines: [],
       }
     );
   }
   if (!existing?.lines.length) {
     return normalizeDraft({
-      name: existing?.name || "Borneo Store",
+      name: existing?.name || "Agentize Store",
       slug: existing?.slug,
       lines: incoming,
     })!;

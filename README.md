@@ -1,9 +1,9 @@
 <div align="center">
 
-# Borneo
+# Agentize
 
-[![XRPL](https://img.shields.io/badge/XRPL%20Testnet-RLUSD%20x402-23292F?style=for-the-badge)](#borneo)
-[![Protocol](https://img.shields.io/badge/Open%20protocol-any%20HTTP%20agent-0B6E4F?style=for-the-badge)](#borneo)
+[![XRPL](https://img.shields.io/badge/XRPL%20Testnet-RLUSD%20x402-23292F?style=for-the-badge)](#agentize)
+[![Protocol](https://img.shields.io/badge/Open%20protocol-any%20HTTP%20agent-0B6E4F?style=for-the-badge)](#agentize)
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-agents-412991?style=for-the-badge&logo=openai&logoColor=white)](#try-it)
 
@@ -50,7 +50,7 @@ flowchart TB
 
 ---
 
-## Borneo
+## Agentize
 
 **Open protocol. Any agent. Same settle rails.**
 
@@ -68,7 +68,7 @@ flowchart LR
 | Index | `/registry.json`, `/llms.txt`, `/s/{slug}/llms.txt` |
 | Discover | `GET /api/search?q=…` (same ranker for buyer UI + external agents) |
 | Buy | `POST /s/{slug}/buy` → **402** → authorize → settle |
-| Skill | [`.agents/skills/borneo-registry-shop`](./.agents/skills/borneo-registry-shop/SKILL.md) |
+| Skill | [`.agents/skills/agentize-registry-shop`](./.agents/skills/agentize-registry-shop/SKILL.md) |
 
 **Do not scrape HTML.** Catalog prose never enters the pay path — settle only sees a locked quote (`storeSlug`, `skuId`, `price`, `merchantAddress`).
 

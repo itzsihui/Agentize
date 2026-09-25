@@ -85,7 +85,7 @@ function inventoryFromLines(
     : storeName ||
       (skus.length === 1
         ? skus[0].title.replace(/\b\w/g, (c) => c.toUpperCase())
-        : "Borneo Store");
+        : "Agentize Store");
   const baseSlug = isHackathon
     ? "hackathon-shirts"
     : name
@@ -94,7 +94,7 @@ function inventoryFromLines(
         .replace(/(^-|-$)/g, "")
         .slice(0, 40) || "store";
   // Merchant-owned shops get a stable unique slug so publishes don't clobber
-  // shared demo slugs like "borneo-store".
+  // shared demo slugs like "agentize-store".
   const slug =
     isHackathon || !ownerUid
       ? baseSlug

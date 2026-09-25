@@ -164,7 +164,7 @@ function SidebarChrome({
 }
 
 /**
- * Collapsible chat history — Aceternity sidebar pattern for Borneo buyer.
+ * Collapsible chat history — Aceternity sidebar pattern for Agentize buyer.
  * @see https://21st.dev/@manuarora700/components/sidebar
  */
 export function ChatHistorySidebar({

@@ -63,7 +63,7 @@ export async function payX402Tool(args: {
         ? `Resolving locked quote /s/${quote.storeSlug} · ${quote.skuId}`
         : args.slug || args.message?.includes("/s/")
           ? "Resolving store"
-          : "Searching Borneo network registry (no /s/{slug} in prompt)",
+          : "Searching Agentize network registry (no /s/{slug} in prompt)",
     });
     steps.push({
       type: "error",

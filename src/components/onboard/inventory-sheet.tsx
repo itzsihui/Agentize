@@ -568,8 +568,8 @@ export function InventorySheet({
         <div className="pointer-events-none absolute bottom-20 right-6 z-20 w-[min(100%,22rem)] sm:bottom-24">
           <div className="pointer-events-auto w-full">
             <AgentDock
-              agentName="Borneo"
-              avatarSrc="https://api.dicebear.com/9.x/shapes/svg?seed=Borneo&size=80"
+              agentName="Agentize"
+              avatarSrc="https://api.dicebear.com/9.x/shapes/svg?seed=Agentize&size=80"
               idleStatus="Ask about this sheet"
               workingStatus="Looking at inventory…"
               onMessageSubmit={handleAsk}

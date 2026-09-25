@@ -5,13 +5,13 @@ pdf_options:
   printBackground: true
 ---
 
-# Borneo — Project Description
+# Agentize — Project Description
 
 **Two-sided agentic commerce:** merchants publish agent-ready catalogs; buyers discover and pay in one chat — with **Visa-scoped cards** and **USDC**, secured by a **CaMeL-shaped** settle lock against prompt injection.
 
 | | |
 |---|---|
-| **Team / Project** | Borneo |
+| **Team / Project** | Agentize |
 | **One-liner** | Agents that shop. Merchants that get paid. Catalog text that cannot steal the money. |
 
 ---
@@ -30,12 +30,12 @@ Prompt injection is widely recognized as one of the largest unsolved problems fo
 
 ## 2. Solution
 
-**Borneo** is a two-sided network:
+**Agentize** is a two-sided network:
 
 - **Merchant side** — Conversational onboard (chat / CSV / URL) → bind Visa receive + wallet → publish agent-discoverable storefronts.
 - **Buyer side** — Fashion salesperson chat discovers **live** multi-merchant SKUs, builds a set/cart, and settles **in the same conversation** via Visa or USDC.
 
-Security is not a warning banner. Inspired by Google DeepMind / ETH Zurich **CaMeL** (*Capabilities for Machine Learning* — [arXiv:2503.18813](https://arxiv.org/abs/2503.18813)), Borneo applies a **CaMeL-shaped control-flow lock** at settle:
+Security is not a warning banner. Inspired by Google DeepMind / ETH Zurich **CaMeL** (*Capabilities for Machine Learning* — [arXiv:2503.18813](https://arxiv.org/abs/2503.18813)), Agentize applies a **CaMeL-shaped control-flow lock** at settle:
 
 - Catalog copy is **quarantined / typed** (injection-shaped listings flagged).
 - Pay tools only accept a **locked quote**: `{ storeSlug, skuId, price, merchantAddress }`.
@@ -48,7 +48,7 @@ On the **AgentDojo** agent-security benchmark, CaMeL demonstrated:
 - **~77% task success with provable security** vs **~84%** undefended — about **7 points** of utility traded for a **design-level** guarantee.
 - Strong **attack collapse** under capability / policy enforcement (far beyond heuristic sandwiching / spotlighting / tool filters).
 
-Borneo productizes that principle for commerce: **untrusted catalog data must not own control flow when money moves.**
+Agentize productizes that principle for commerce: **untrusted catalog data must not own control flow when money moves.**
 
 ---
 
@@ -114,4 +114,4 @@ Ask for the injection-shaped listing → see quarantine → open pay → confirm
 
 ---
 
-*Borneo — Agents that shop. Merchants that get paid. Prompt injection defeated by design at settle.*
+*Agentize — Agents that shop. Merchants that get paid. Prompt injection defeated by design at settle.*

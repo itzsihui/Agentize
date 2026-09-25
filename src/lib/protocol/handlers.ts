@@ -331,7 +331,7 @@ export async function handleOrder(slug: string, id: string) {
 
 function receipt(order: Order, store?: StoreRecord | null) {
   return {
-    type: "borneo.receipt",
+    type: "agentize.receipt",
     orderId: order.id,
     store: order.slug,
     skuId: order.skuId,

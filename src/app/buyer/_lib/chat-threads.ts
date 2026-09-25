@@ -8,7 +8,7 @@ import {
   type PaymentRail,
 } from "./buyer-flow";
 
-const THREADS_KEY = "borneo.buyer.chats.v1";
+const THREADS_KEY = "agentize.buyer.chats.v1";
 
 export type ChatThreadSnapshot = {
   selectedId: string | null;

@@ -187,7 +187,7 @@ export function SalespersonChat({
               Fashion salesperson
             </h2>
             <p className="truncate text-[11px] text-foreground/50">
-              Clarifies intent · searches Borneo · pays in-chat
+              Clarifies intent · searches Agentize · pays in-chat
             </p>
           </div>
         </div>

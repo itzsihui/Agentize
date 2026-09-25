@@ -1,22 +1,22 @@
 ---
-name: borneo-registry-shop
+name: agentize-registry-shop
 description: >
-  Browse the Borneo agentic storefront registry and purchase any listed SKU over
+  Browse the Agentize agentic storefront registry and purchase any listed SKU over
   the public HTTP protocol (no API key, no HTML scrape). Use when the user wants
-  to shop Borneo, buy from the registry, list stores/SKUs, search products, pay
-  via x402 RLUSD, or Visa-scoped checkout. Triggers on: /borneo-registry-shop,
-  "buy from Borneo", "registry.json", "agent storefront", "purchase SKU",
+  to shop Agentize, buy from the registry, list stores/SKUs, search products, pay
+  via x402 RLUSD, or Visa-scoped checkout. Triggers on: /agentize-registry-shop,
+  "buy from Agentize", "registry.json", "agent storefront", "purchase SKU",
   "x402 buy", or shopping across merchant catalogs on this network.
 license: MIT
 metadata:
-  protocol: borneo-agentic-storefront
+  protocol: agentize-agentic-storefront
   version: "1.2"
   vertical: fashion
 ---
 
-# Borneo Registry Shop
+# Agentize Registry Shop
 
-Public discovery + purchase for the **Borneo Agentic Storefront Protocol**.
+Public discovery + purchase for the **Agentize Agentic Storefront Protocol**.
 Anyone with network access can read the registry and buy — no Firebase login,
 no merchant API key. Payment proof is the gate (x402 signature or Visa mandate).
 
@@ -25,7 +25,7 @@ no merchant API key. Payment proof is the gate (x402 signature or Visa mandate).
 Set `ORIGIN` once, then use absolute URLs:
 
 ```bash
-ORIGIN="${BORNEO_ORIGIN:-${PROTOCOL_ORIGIN:-${NEXT_PUBLIC_PROTOCOL_BASE_URL:-http://localhost:3000}}}"
+ORIGIN="${AGENTIZE_ORIGIN:-${PROTOCOL_ORIGIN:-${NEXT_PUBLIC_PROTOCOL_BASE_URL:-http://localhost:3000}}}"
 ```
 
 Ask the user for a deployed base URL if localhost is wrong. Never invent checkout HTML pages.
@@ -144,7 +144,7 @@ Wallet must be funded with testnet XRP + RLUSD trust line. See companion XRPL/RL
 ```bash
 ORDER_ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
 # 1) Challenge
-curl -sS -D - -o /tmp/borneo-402.json -X POST "$ORIGIN/s/$SLUG/buy" \
+curl -sS -D - -o /tmp/agentize-402.json -X POST "$ORIGIN/s/$SLUG/buy" \
   -H 'content-type: application/json' \
   -d "{\"skuId\":\"$SKU_ID\",\"quantity\":1,\"orderId\":\"$ORDER_ID\"}"
 # Expect HTTP 402. Read accepts[0].amount and accepts[0].payTo — must match locked quote.
@@ -201,7 +201,6 @@ To purchase **any** in-stock SKU: walk `registry.json` → `stores[]` (or `/api/
 ## Out of scope
 
 - Merchant onboard / publishing stores → app `/onboard`, not this skill.
-- Editing XRPL protocol internals → `xrpl-agentic-resources`.
 - Scraping `/market` HTML or inventing SKUs.
 
 ## More detail

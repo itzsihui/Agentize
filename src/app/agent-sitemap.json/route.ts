@@ -47,7 +47,7 @@ export async function GET(request: Request) {
 
   return Response.json(
     {
-      protocol: "borneo-agentic-storefront",
+      protocol: "agentize-agentic-storefront",
       version: "1.2",
       description:
         "Agent sitemap — crawl these catalogs. Prefer /api/search for intent queries. Do not scrape HTML.",

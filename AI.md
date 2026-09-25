@@ -1,8 +1,8 @@
-# Borneo x Visa: Conversational Commerce Agents
+# Agentize x Visa: Conversational Commerce Agents
 
 Source of truth for this prototype. Landing copy, demo script, and product decisions should map here. Do not invent a fifth pillar.
 
-**Design read:** cinematic product landing for Visa hackathon judges, trust-first commerce language, existing Borneo system (Syne + IBM Plex, jade / ember / ink, metalHuman stage).
+**Design read:** cinematic product landing for Visa hackathon judges, trust-first commerce language, existing Agentize system (Syne + IBM Plex, jade / ember / ink, metalHuman stage).
 
 **Dials:** `DESIGN_VARIANCE: 6` · `MOTION_INTENSITY: 5` · `VISUAL_DENSITY: 4`
 
@@ -22,7 +22,7 @@ The opportunity: one conversation for discovery, decision, and payment, on Visa'
 
 ## Expected submissions (map 1:1)
 
-| Pillar | What judges asked | What Borneo ships | Live surface |
+| Pillar | What judges asked | What Agentize ships | Live surface |
 |---|---|---|---|
 | **AI Agent Layer** | Chatbot or voice assistant trained for one category. Handles discovery, recommendations, comparison, purchase decision. | Fashion buyer agent. Chat clarifies intent, ranks live apparel, compares SKUs, then hands off to pay. | `/buyer` |
 | **Merchant access** | No-code / low-code go-live (upload catalog, connect APIs). Works for a single-location SME and a multi-location retailer. | Merchant chat: type inventory, drop CSV, or paste a store URL. Same flow for one shop or many locations. | `/onboard` |
@@ -99,4 +99,4 @@ The homepage must make the four pillars obvious without requiring the demo first
 
 ## Why this matters
 
-This sits at AI, fintech, and commerce infrastructure. Visa's focus is agentic commerce with trusted payments. Borneo is the plug-and-play agent a merchant of any size can deploy, and the conversation a shopper can finish without leaving chat.
+This sits at AI, fintech, and commerce infrastructure. Visa's focus is agentic commerce with trusted payments. Agentize is the plug-and-play agent a merchant of any size can deploy, and the conversation a shopper can finish without leaving chat.

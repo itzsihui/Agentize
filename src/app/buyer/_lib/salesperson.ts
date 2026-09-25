@@ -45,7 +45,7 @@ function uniqThoughts(lines: string[], limit = 5): string[] {
   return out;
 }
 
-const SYSTEM = `You are Borneo's fashion buyer salesperson — a warm, sharp personal shopper for apparel sold by merchants on the Borneo network.
+const SYSTEM = `You are Agentize's fashion buyer salesperson — a warm, sharp personal shopper for apparel sold by merchants on the Agentize network.
 
 You search LIVE seller catalogs later (registry + each store's products). Never invent SKUs, prices, or stock.
 
@@ -275,7 +275,7 @@ function detectStyle(text: string): string | undefined {
 }
 
 const META_HELP_REPLY =
-  "You chat with me like a salesperson — tell me the occasion or piece you want, I clarify if needed, then I search live seller catalogs on Borneo. You pick what you like and pay in chat with Visa or RLUSD (nothing charges until you authorize). What are you looking to wear?";
+  "You chat with me like a salesperson — tell me the occasion or piece you want, I clarify if needed, then I search live seller catalogs on Agentize. You pick what you like and pay in chat with Visa or RLUSD (nothing charges until you authorize). What are you looking to wear?";
 
 const META_HELP_SUGGESTIONS = [
   "I want a t-shirt",
@@ -670,7 +670,7 @@ export function ensureConversationProgress(
       reply:
         result.reply && !/found|here'?s what/i.test(result.reply)
           ? result.reply
-          : "I'll search seller catalogs on the Borneo network for that now.",
+          : "I'll search seller catalogs on the Agentize network for that now.",
     };
   };
 
@@ -1206,7 +1206,7 @@ export function runDeterministicSalesperson(
   // Item known + any follow-up (casual, color, budget, "just show me") → search
   if (item !== "unknown" && turns >= 2) {
     return ensureConversationProgress(messages, {
-      reply: "I'll search the Borneo network for that now.",
+      reply: "I'll search the Agentize network for that now.",
       suggestions: [],
       status: "ready",
       searchQuery: inferSearchQuery(messages, profile),
@@ -1218,7 +1218,7 @@ export function runDeterministicSalesperson(
   if (item === "tee" && turns === 1) {
     // Skip apparel re-asks — go straight to catalog for clear item intents
     return ensureConversationProgress(messages, {
-      reply: "I'll search the Borneo network for that now.",
+      reply: "I'll search the Agentize network for that now.",
       suggestions: [],
       status: "ready",
       searchQuery: inferSearchQuery(messages, profile),
@@ -1229,7 +1229,7 @@ export function runDeterministicSalesperson(
 
   if (item === "cap" && turns === 1) {
     return ensureConversationProgress(messages, {
-      reply: "I'll search the Borneo network for a cap now.",
+      reply: "I'll search the Agentize network for a cap now.",
       suggestions: [],
       status: "ready",
       searchQuery: "cap",
@@ -1251,7 +1251,7 @@ export function runDeterministicSalesperson(
 
   if (/\bpants?\b|\bjeans\b|\btrousers?\b/.test(userCorpus.toLowerCase()) && turns >= 2) {
     return {
-      reply: "I'll search the Borneo network for pants now.",
+      reply: "I'll search the Agentize network for pants now.",
       suggestions: [],
       status: "ready",
       searchQuery: "pants",
@@ -1262,7 +1262,7 @@ export function runDeterministicSalesperson(
 
   if (item === "cap" || /\bcap\b|\bhat\b/.test(lower)) {
     return {
-      reply: "I'll search the Borneo network for a cap now.",
+      reply: "I'll search the Agentize network for a cap now.",
       suggestions: [],
       status: "ready",
       searchQuery: "cap",
@@ -1273,7 +1273,7 @@ export function runDeterministicSalesperson(
 
   if (item === "compare") {
     return {
-      reply: "I'll search the Borneo network to compare tee and cap options.",
+      reply: "I'll search the Agentize network to compare tee and cap options.",
       suggestions: [],
       status: "ready",
       searchQuery: "shirt",
@@ -1296,7 +1296,7 @@ export function runDeterministicSalesperson(
         ? "plain"
         : undefined);
   return {
-    reply: "I'll search the Borneo network for that now.",
+    reply: "I'll search the Agentize network for that now.",
     suggestions: [],
     status: "ready",
     searchQuery: catalog.searchQuery,

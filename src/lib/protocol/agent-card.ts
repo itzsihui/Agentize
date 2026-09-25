@@ -7,7 +7,7 @@ export function renderAgentCard(store: StoreRecord, origin: string) {
   return {
     name: store.name,
     slug: store.slug,
-    protocol: "borneo-agentic-storefront",
+    protocol: "agentize-agentic-storefront",
     version: "1.0",
     protocols: ["llms.txt", "acp", "x402", "visa-card"],
     description:

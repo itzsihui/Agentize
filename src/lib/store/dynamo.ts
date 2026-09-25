@@ -82,8 +82,8 @@ const seedStore = (): StoreRecord => ({
       price: "0.01",
     },
     {
-      id: "borneo-cap",
-      title: "Borneo Cap",
+      id: "agentize-cap",
+      title: "Agentize Cap",
       description: "Black cap for agent merchants",
       quantity: 20,
       price: "0.02",

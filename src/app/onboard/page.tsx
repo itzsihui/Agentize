@@ -321,7 +321,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: data.reply,
           llm: data.llm,
         },
@@ -330,7 +330,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text:
             error instanceof Error
               ? error.message
@@ -368,7 +368,7 @@ export default function OnboardPage() {
         ? []
         : [
             {
-              role: "borneo" as const,
+              role: "agentize" as const,
               text: visaReceive?.accountLabel
                 ? `Crypto receive is ${proof.address}. Describe products, import a CSV, or paste a Shopify URL when you're ready.`
                 : `Crypto receive is ${proof.address}. Finish Visa + governance on Setup before publishing.`,
@@ -403,7 +403,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: "Share a fashion description — e.g. “10 linen shirts, 8 tote bags, 6 sneakers” — and I'll draft the listing, then ask for RLUSD prices.",
         },
       ]);
@@ -413,7 +413,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: "Choose a CSV with title, description, quantity, price. Quote any description that contains commas.",
         },
       ]);
@@ -422,7 +422,7 @@ export default function OnboardPage() {
     setLines((prev) => [
       ...prev,
       {
-        role: "borneo",
+        role: "agentize",
         text: "Paste a Shopify storefront URL. We’ll pull products, keep USD≈RLUSD suggestions, and ask you to confirm prices.",
       },
     ]);
@@ -465,7 +465,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: "Finish Visa receive on Setup before publishing. Both crypto and Visa rails are required.",
         },
       ]);
@@ -500,7 +500,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: "Finish Visa receive on Setup before publishing.",
         },
       ]);
@@ -516,7 +516,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: "Finish Visa receive on Setup before saving to the live store.",
         },
       ]);
@@ -567,7 +567,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text: data.reply || "Inventory saved.",
         },
       ]);
@@ -575,7 +575,7 @@ export default function OnboardPage() {
       setLines((prev) => [
         ...prev,
         {
-          role: "borneo",
+          role: "agentize",
           text:
             error instanceof Error
               ? error.message

@@ -34,7 +34,7 @@ export function SiteHeader({
             dark ? "text-neutral-100" : "text-foreground",
           )}
         >
-          Borneo
+          Agentize
         </Link>
         <nav
           className={cn(

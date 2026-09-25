@@ -1,6 +1,6 @@
-# XRPL Testnet + RLUSD setup (Borneo)
+# XRPL Testnet + RLUSD setup (Agentize)
 
-Borneo settles the crypto rail with **RLUSD on XRPL Testnet** via x402.
+Agentize settles the crypto rail with **RLUSD on XRPL Testnet** via x402.
 
 Preferred tooling: **[t54-labs rlusd-cli](https://github.com/t54-labs/rlusd-cli)** (`@rlusd/cli`).  
 `rlusd faucet fund --chain xrpl` provisions XRP (and points you at RLUSD funding);  
@@ -40,12 +40,12 @@ rlusd config set --network testnet
 
 export RLUSD_WALLET_PASSWORD='choose-a-local-password'
 
-# Buyer wallet (Borneo server settles with this account's seed)
-rlusd wallet generate --chain xrpl --name borneo-buyer
-rlusd wallet use borneo-buyer --chain xrpl
+# Buyer wallet (Agentize server settles with this account's seed)
+rlusd wallet generate --chain xrpl --name agentize-buyer
+rlusd wallet use agentize-buyer --chain xrpl
 
 # Optional second wallet for merchant receive
-rlusd wallet generate --chain xrpl --name borneo-merchant
+rlusd wallet generate --chain xrpl --name agentize-merchant
 ```
 
 ### 3. Fund XRP + TrustSet + RLUSD
@@ -64,9 +64,9 @@ rlusd balance --chain xrpl
 rlusd xrpl trustline status
 ```
 
-Do the same trustline on the **merchant** wallet (switch with `rlusd wallet use borneo-merchant --chain xrpl`) so it can receive RLUSD.
+Do the same trustline on the **merchant** wallet (switch with `rlusd wallet use agentize-merchant --chain xrpl`) so it can receive RLUSD.
 
-### 4. Wire Borneo `.env.local`
+### 4. Wire Agentize `.env.local`
 
 ```bash
 rlusd wallet address --chain xrpl          # classic r… of active wallet
@@ -86,7 +86,7 @@ TOKEN_ISSUER=rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV
 TOKEN_ADDRESS=524C555344000000000000000000000000000000
 EXPLORER_BASE=https://testnet.xrpl.org
 
-# Merchant payTo — classic r… (borneo-merchant address, or Xaman address)
+# Merchant payTo — classic r… (agentize-merchant address, or Xaman address)
 MERCHANT_ADDRESS=r...
 
 # Buyer settle seed — import into rlusd OR paste the s… secret from faucet / wallet generate
@@ -94,11 +94,11 @@ MERCHANT_ADDRESS=r...
 XRPL_BUYER_SEED=sEd...
 ```
 
-**Seed tip:** when you generate/import with rlusd-cli, keep the `s…` secret somewhere safe once; Borneo needs it in `XRPL_BUYER_SEED` (server-side settle).  
+**Seed tip:** when you generate/import with rlusd-cli, keep the `s…` secret somewhere safe once; Agentize needs it in `XRPL_BUYER_SEED` (server-side settle).  
 You can also import an existing faucet secret:
 
 ```bash
-rlusd wallet import --chain xrpl --secret 'sEd...' --name borneo-buyer
+rlusd wallet import --chain xrpl --secret 'sEd...' --name agentize-buyer
 ```
 
 ### 5. Smoke test

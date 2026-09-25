@@ -10,7 +10,7 @@ export function renderLlmsTxt(store: StoreRecord, origin: string) {
   const base = `${origin}/s/${store.slug}`;
   return `# ${store.name}
 
-> AI-native storefront on the Agentic Storefront Protocol (Borneo).
+> AI-native storefront on the Agentic Storefront Protocol (Agentize).
 > Humans use a GUI. Agents use this file.
 
 This store sells in ${config.tokenSymbol} on XRPL (${config.network}).

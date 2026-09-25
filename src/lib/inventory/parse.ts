@@ -282,7 +282,7 @@ function draftFromLines(
     storeHint ||
     (lines.length === 1
       ? storeNameFromTitle(lines[0].title)
-      : "Borneo Store");
+      : "Agentize Store");
   return enrichDraftWithFashion({
     name,
     slug: slugify(name),
@@ -499,7 +499,7 @@ export function parseMerchantPrompt(text: string): InventoryParseResult {
       : extracted.storeHint ||
         (skus.length === 1
           ? storeNameFromTitle(skus[0].title)
-          : "Borneo Store");
+          : "Agentize Store");
     return {
       ok: true,
       inventory: {
@@ -606,7 +606,7 @@ export function completeDraftWithPrices(
     : normalized.name ||
       (skus.length === 1
         ? storeNameFromTitle(skus[0].title)
-        : "Borneo Store");
+        : "Agentize Store");
 
   return {
     ok: true,
@@ -944,7 +944,7 @@ function parseCsvHeaderless(csv: string): InventoryParseResult {
   const name =
     skus.length === 1
       ? skus[0].title.replace(/\b\w/g, (c) => c.toUpperCase())
-      : "Borneo Store";
+      : "Agentize Store";
   return { ok: true, inventory: { name, slug: slugify(name), skus } };
 }
 

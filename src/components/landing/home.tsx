@@ -107,7 +107,7 @@ export function LandingHome() {
               href="/"
               className="landing-brand text-lg text-[var(--landing-fog)]"
             >
-              Borneo
+              Agentize
             </Link>
             <nav className="flex items-center gap-5 text-sm text-[var(--landing-fog)]/70">
               <Link
@@ -539,7 +539,7 @@ export function LandingHome() {
           />
           <Reveal className="relative mx-auto max-w-[1400px]">
             <p className="landing-brand text-[clamp(3.5rem,12vw,8rem)] text-[var(--landing-fog)]">
-              Borneo
+              Agentize
             </p>
             <p className="mt-6 max-w-[36ch] text-base text-[var(--landing-fog)]/65 md:text-lg">
               Publish once for every agent. Sell first — shoppers follow. Two
@@ -562,7 +562,7 @@ export function LandingHome() {
         <footer className="border-t border-white/10 px-6 py-8 md:px-10">
           <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 text-sm text-[var(--landing-fog)]/40">
             <span className="font-[family-name:var(--font-syne)] tracking-tight">
-              Borneo
+              Agentize
             </span>
             <div className="flex flex-wrap items-center gap-6">
               <Link

@@ -145,7 +145,7 @@ async function runOpenAIInventoryAsk(
   const key = process.env.OPENAI_API_KEY?.trim();
   if (!key) return null;
 
-  const system = `You are Borneo's inventory assistant for a merchant fashion sheet.
+  const system = `You are Agentize's inventory assistant for a merchant fashion sheet.
 Answer ONLY from the JSON sheet context. Be concise (1–4 short sentences).
 Never invent SKUs, quantities, or prices.
 If price is null / pricePending, say "price pending" — never invent 0.00 or treat missing prices as zero list value.

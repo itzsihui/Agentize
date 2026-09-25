@@ -80,7 +80,7 @@ export function DiscoveryPane({
         </div>
         <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#0f1419] p-3 [&_.no-visible-scrollbar]:!h-44">
           <Terminal
-            username="borneo"
+            username="agentize"
             enableSound={false}
             typingSpeed={28}
             delayBetweenCommands={600}

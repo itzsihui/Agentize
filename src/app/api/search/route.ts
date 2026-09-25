@@ -101,7 +101,7 @@ export async function GET(request: Request) {
 
   return Response.json(
     {
-      protocol: "borneo-agentic-storefront",
+      protocol: "agentize-agentic-storefront",
       vertical: "fashion",
       ranking: {
         relevance: "semantic_or_keyword",

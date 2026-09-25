@@ -845,8 +845,8 @@ export default function BuyerPage() {
           role: "assistant",
           content: ready
             ? data.reply?.match(/found|here'?s what/i)
-              ? "I'll search the Borneo network for that now."
-              : data.reply || "I'll search the Borneo network for that now."
+              ? "I'll search the Agentize network for that now."
+              : data.reply || "I'll search the Agentize network for that now."
             : data.reply || "Tell me a bit more about what you want.",
           // Clarifying turns: show occasion inference before catalog search
           ...(!ready && thoughtBullets.length

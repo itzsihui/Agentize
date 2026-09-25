@@ -137,7 +137,7 @@ async function fetchFollowingRedirects(
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       headers: {
         accept: "application/json, text/html;q=0.8,*/*;q=0.5",
-        "user-agent": "BorneoStoreImport/1.0",
+        "user-agent": "AgentizeStoreImport/1.0",
         ...(init?.headers ?? {}),
       },
     });

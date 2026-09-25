@@ -32,7 +32,7 @@ export function parseMerchantAddress(
 function buildAuthMessage(address: ClassicAddress): string {
   const issuedAt = new Date().toISOString();
   return [
-    "Borneo — merchant wallet authentication",
+    "Agentize — merchant wallet authentication",
     "",
     "Sign this message to prove you control the payout address for XRPL x402.",
     "This does not move funds or submit a ledger transaction.",

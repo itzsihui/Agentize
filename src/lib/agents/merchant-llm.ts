@@ -73,7 +73,7 @@ export async function runMerchantOpenAI(args: {
   const key = process.env.OPENAI_API_KEY?.trim();
   if (!key) return null;
 
-  const system = `You are Borneo's fashion merchant agent for a chat storefront.
+  const system = `You are Agentize's fashion merchant agent for a chat storefront.
 Help the merchant build inventory (apparel, accessories, shoes). Prices are in ${config.tokenSymbol}.
 
 Respond with JSON only:

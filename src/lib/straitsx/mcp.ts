@@ -135,7 +135,7 @@ async function issueViaCardMcp(args: {
   const account = privateKeyToAccount(key);
   // Sandbox tool requires amount_sgd between 5 and 30.
   const amountSgd = Math.min(30, Math.max(5, Math.ceil(Number(args.spendCap) || 5)));
-  const cardholderName = (args.cardholderName || "Borneo Agent").replace(
+  const cardholderName = (args.cardholderName || "Agentize Agent").replace(
     /[^a-zA-Z ]/g,
     "",
   ).slice(0, 26);
@@ -148,7 +148,7 @@ async function issueViaCardMcp(args: {
     toolName,
     toolArgs: {
       wallet_address: account.address,
-      cardholder_name: cardholderName || "Borneo Agent",
+      cardholder_name: cardholderName || "Agentize Agent",
       amount_sgd: amountSgd,
     },
   });
@@ -168,7 +168,7 @@ async function issueViaCardMcp(args: {
 
   const body = {
     amount_sgd: amountSgd,
-    cardholder_name: cardholderName || "Borneo Agent",
+    cardholder_name: cardholderName || "Agentize Agent",
     wallet_address: account.address,
   };
 

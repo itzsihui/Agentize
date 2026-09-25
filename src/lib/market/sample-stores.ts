@@ -387,8 +387,8 @@ export function sampleMarketStores(
           "0.01",
         ),
         sku(
-          "borneo-cap",
-          "Borneo Cap",
+          "agentize-cap",
+          "Agentize Cap",
           "Black cap for agent merchants",
           20,
           "0.02",

@@ -1,4 +1,4 @@
-const SESSION_KEY = "borneo.demo.session.v2";
+const SESSION_KEY = "agentize.demo.session.v2";
 
 export type SessionStoreRef = {
   slug: string;
@@ -8,7 +8,7 @@ export type SessionStoreRef = {
 
 export type OnboardSession = {
   message: string;
-  lines: Array<{ role: "merchant" | "borneo"; text: string; llm?: string }>;
+  lines: Array<{ role: "merchant" | "agentize"; text: string; llm?: string }>;
   draft: {
     name?: string;
     lines: Array<{ quantity: number; title: string; price?: string }>;
@@ -33,7 +33,7 @@ export type BuyerSession = {
   lines: Array<{ role: string; text: string }>;
 };
 
-export type BorneoDemoSession = {
+export type AgentizeDemoSession = {
   lastStore?: SessionStoreRef;
   onboard?: OnboardSession;
   buyer?: BuyerSession;
@@ -43,18 +43,18 @@ function canUseSession() {
   return typeof window !== "undefined" && typeof sessionStorage !== "undefined";
 }
 
-export function readDemoSession(): BorneoDemoSession {
+export function readDemoSession(): AgentizeDemoSession {
   if (!canUseSession()) return {};
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
     if (!raw) return {};
-    return JSON.parse(raw) as BorneoDemoSession;
+    return JSON.parse(raw) as AgentizeDemoSession;
   } catch {
     return {};
   }
 }
 
-export function writeDemoSession(patch: Partial<BorneoDemoSession>) {
+export function writeDemoSession(patch: Partial<AgentizeDemoSession>) {
   if (!canUseSession()) return;
   try {
     const next = { ...readDemoSession(), ...patch };
@@ -76,7 +76,7 @@ export function clearBuyerShopSession() {
   }
   try {
     if (typeof localStorage !== "undefined") {
-      localStorage.removeItem("borneo.buyer.chats.v1");
+      localStorage.removeItem("agentize.buyer.chats.v1");
     }
   } catch {
     // ignore
@@ -134,7 +134,7 @@ export const DEFAULT_ONBOARD_MESSAGE = "";
 
 export const DEFAULT_ONBOARD_LINES: OnboardSession["lines"] = [
   {
-    role: "borneo",
+    role: "agentize",
     text: "I'm your merchant agent — tell me what fashion inventory you're stocking, or pick a chip below to import CSV / Shopify / XRPL wallet.",
   },
 ];

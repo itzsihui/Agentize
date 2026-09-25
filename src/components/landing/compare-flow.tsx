@@ -155,7 +155,7 @@ export function LandingCompareFlow() {
       </section>
 
       <section
-        aria-label="Borneo open protocol"
+        aria-label="Agentize open protocol"
         className="relative overflow-hidden border-t border-white/10 bg-[#060908] px-6 py-24 md:px-10 md:py-32"
       >
         <div
@@ -173,7 +173,7 @@ export function LandingCompareFlow() {
         <div className="relative mx-auto max-w-[1400px]">
           <Reveal>
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--landing-jade)]/70">
-              Borneo
+              Agentize
             </p>
             <h2 className="mt-4 max-w-[16ch] font-[family-name:var(--font-syne)] text-[clamp(1.75rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-tight text-[var(--landing-fog)]">
               Open protocol. Any agent. Same settle rails.
