@@ -35,7 +35,7 @@ const memMerchants = (g.__worldMerchants ??= new Map());
 export function normalizeNullifier(raw: string): string {
   const v = raw.trim();
   try {
-    return BigInt(v.startsWith("0x") || v.startsWith("0X") ? v : v).toString(10);
+    return BigInt(v).toString(10);
   } catch {
     return v.toLowerCase();
   }
