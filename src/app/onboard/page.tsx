@@ -34,6 +34,8 @@ import {
 import {
   type MerchantAuthProof,
 } from "@/lib/wallet/ethereum";
+import { merchantJsonHeaders } from "@/lib/world/client-auth";
+import { WorldListingNotice } from "@/components/world/world-listing-notice";
 
 export default function OnboardPage() {
   const router = useRouter();
@@ -199,7 +201,7 @@ export default function OnboardPage() {
     try {
       const res = await fetch("/api/merchant-agent", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: await merchantJsonHeaders(merchant.user),
         body: JSON.stringify({
           message: payload.message,
           csv: payload.csv,
@@ -526,7 +528,7 @@ export default function OnboardPage() {
     try {
       const res = await fetch("/api/merchant-inventory", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: await merchantJsonHeaders(merchant.user),
         body: JSON.stringify({
           slug,
           draft,
@@ -644,6 +646,8 @@ export default function OnboardPage() {
               Settings
             </Link>
           </div>
+
+          <WorldListingNotice user={merchant.user} />
 
           <MerchantChat
             lines={lines}

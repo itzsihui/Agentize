@@ -4,6 +4,11 @@ import {
   type MerchantDraft,
 } from "@/lib/inventory/parse";
 
+import {
+  applyListingGateReply,
+  resolveListingGate,
+} from "@/lib/world/listing-gate";
+
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -36,20 +41,21 @@ export async function POST(request: Request) {
       });
     }
 
+    const gate = await resolveListingGate(request, body);
     const result = await saveDraftToLiveStore({
       slug,
       draft,
       prices: body.prices || [],
       quantities: body.quantities || [],
       merchantAuth: body.merchantAuth,
-      ownerUid: body.ownerUid,
+      ownerUid: gate.ownerUid,
       merchantDisplayName: body.merchantDisplayName,
       visaReceive: body.visaReceive,
       boundWalletAddress: body.boundWalletAddress,
-      listOnMarket: body.listOnMarket,
+      listOnMarket: gate.listOnMarket,
     });
 
-    return Response.json(result);
+    return Response.json(applyListingGateReply(result, gate.blocked));
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Could not save inventory";

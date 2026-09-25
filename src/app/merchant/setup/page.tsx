@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WorldVerifyCard } from "@/components/world/world-verify-card";
 import { useMerchantAuth } from "@/app/merchant/_components/merchant-auth-provider";
 import {
   DEFAULT_MERCHANT_GOVERNANCE,
@@ -199,6 +200,8 @@ export default function MerchantSetupPage() {
           {message}
         </p>
       ) : null}
+
+      <WorldVerifyCard user={merchant.user} />
 
       <form onSubmit={(e) => void onSave(e)} className="mt-8 space-y-10">
         <section className="space-y-3">
