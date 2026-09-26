@@ -88,9 +88,23 @@ export async function POST(request: Request) {
     return fail(502, "world_unreachable", "Could not reach World ID verification.");
   }
   if (!worldRes.ok) {
-    const detail = await worldRes.text().catch(() => "");
-    console.warn("[world-verify] rejected", worldRes.status, detail.slice(0, 300));
-    return fail(403, "proof_rejected", "World ID rejected this proof.");
+    const raw = await worldRes.text().catch(() => "");
+    console.warn("[world-verify] rejected", worldRes.status, raw.slice(0, 500));
+    let worldCode = "";
+    let worldDetail = "";
+    try {
+      const parsed = JSON.parse(raw) as { code?: string; detail?: string };
+      worldCode = parsed.code || "";
+      worldDetail = parsed.detail || "";
+    } catch {
+      worldDetail = raw.slice(0, 200);
+    }
+    const reason = [worldCode, worldDetail].filter(Boolean).join(": ");
+    return fail(
+      403,
+      "proof_rejected",
+      `World ID rejected this proof (HTTP ${worldRes.status}${reason ? ` — ${reason}` : ""}).`,
+    );
   }
 
   const claim = await claimNullifierForMerchant({
