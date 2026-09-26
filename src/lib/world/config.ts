@@ -42,6 +42,14 @@ export function worldRpSigningKey(): string | null {
   return process.env.WORLD_RP_SIGNING_KEY?.trim() || null;
 }
 
+/**
+ * Server-only: token from the Developer Portal's `set_world_id_staging_verification`
+ * (valid 24h). Required for World to accept staging / Simulator proofs.
+ */
+export function worldStagingVerificationToken(): string | null {
+  return process.env.WORLD_STAGING_VERIFICATION_TOKEN?.trim() || null;
+}
+
 export const WORLD_VERIFY_BASE_URL =
   process.env.WORLD_VERIFY_BASE_URL?.trim() ||
   "https://developer.world.org/api/v4/verify";

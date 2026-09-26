@@ -7,6 +7,7 @@ import {
   WORLD_ACTION_PUBLISH_STOREFRONT,
   WORLD_VERIFY_BASE_URL,
   worldPublicConfig,
+  worldStagingVerificationToken,
 } from "@/lib/world/config";
 import { claimNullifierForMerchant } from "@/lib/world/registry";
 
@@ -18,6 +19,16 @@ type ResponseItem = IDKitResult["responses"][number] & {
   issuer_schema_id?: number;
   signal_hash?: string;
 };
+
+function verifyHeaders(environment: string): Record<string, string> {
+  const headers: Record<string, string> = { "content-type": "application/json" };
+  const token = worldStagingVerificationToken();
+  // Staging / Simulator proofs are only accepted inside an open staging window.
+  if (environment !== "production" && token) {
+    headers["x-staging-verification-token"] = token;
+  }
+  return headers;
+}
 
 function fail(status: number, code: string, message: string) {
   return Response.json({ ok: false, code, message }, { status });
@@ -80,7 +91,7 @@ export async function POST(request: Request) {
     `${WORLD_VERIFY_BASE_URL}/${encodeURIComponent(cfg.rpId)}`,
     {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: verifyHeaders(String(result.environment || cfg.environment)),
       body: JSON.stringify(result),
     },
   ).catch(() => null);
