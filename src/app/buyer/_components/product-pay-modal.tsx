@@ -65,7 +65,7 @@ export function ProductPayModal({
           if (!busy) onClose();
         }}
       />
-      <div className="relative z-[1] flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden border border-border bg-background shadow-xl">
+      <div className="relative z-[1] flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
         <div className="relative aspect-[4/3] bg-muted">
           <Image
             src={product.imageUrl}
@@ -135,55 +135,47 @@ export function ProductPayModal({
               </p>
             </div>
           ) : (
-            <div className="mt-5 space-y-3">
-              <div className="rounded-md border border-border bg-muted/40 px-3 py-3 text-[13px] leading-relaxed text-foreground/75">
-                <p className="text-[11px] font-medium tracking-wide text-foreground/50 uppercase">
-                  Locked quote
-                </p>
-                <dl className="mt-2 space-y-1.5 font-mono text-[12px]">
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">Merchant</dt>
-                    <dd className="text-right text-foreground">
-                      /s/{product.storeSlug}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">SKU</dt>
-                    <dd className="text-right text-foreground">
-                      {product.id.includes(":")
-                        ? product.id.slice(product.id.indexOf(":") + 1)
-                        : product.id}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">Amount</dt>
-                    <dd className="text-right text-foreground">
-                      {product.price} USDC
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">Rail</dt>
-                    <dd className="text-right text-foreground">USDC · x402</dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">Authorize</dt>
-                    <dd className="text-right text-foreground">Required</dd>
-                  </div>
-                </dl>
-                <p className="mt-3 font-sans text-[12px] leading-relaxed text-foreground/55">
-                  {product.quarantined
-                    ? "Injection blocked from control flow: payee, amount, SKU, and authorize stay locked to this quote — not the hostile title."
-                    : "Untrusted catalog copy cannot change these fields."}
-                </p>
-              </div>
-              <div className="rounded-md border border-border bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/75">
-                Confirm x402 on Base Sepolia: transfer{" "}
-                <strong>{product.price}</strong> USDC to merchant crypto receive{" "}
-                <span className="font-mono text-xs">
-                  {product.merchantAddress || "store payTo"}
-                </span>{" "}
-                after HTTP 402, then unlock with PAYMENT-SIGNATURE.
-              </div>
+            <div className="mt-5 space-y-4">
+              <dl className="space-y-2.5 rounded-xl border border-border px-4 py-4 text-sm">
+                <div className="flex items-baseline justify-between gap-4">
+                  <dt className="text-foreground/50">Store</dt>
+                  <dd className="truncate text-right font-mono text-xs">
+                    /s/{product.storeSlug}
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <dt className="text-foreground/50">SKU</dt>
+                  <dd className="truncate text-right font-mono text-xs">
+                    {product.id.includes(":")
+                      ? product.id.slice(product.id.indexOf(":") + 1)
+                      : product.id}
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <dt className="text-foreground/50">Rail</dt>
+                  <dd className="text-right font-medium">USDC · x402</dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4 border-t border-border pt-3">
+                  <dt className="font-[family-name:var(--font-space)] font-semibold">
+                    You pay
+                  </dt>
+                  <dd className="font-[family-name:var(--font-space)] text-xl font-semibold tabular-nums tracking-tight">
+                    {product.price}{" "}
+                    <span className="text-sm font-medium text-foreground/45">
+                      USDC
+                    </span>
+                  </dd>
+                </div>
+              </dl>
+              <p className="text-[12px] leading-relaxed text-foreground/45">
+                {product.quarantined
+                  ? "Hostile catalog copy cannot change payee, amount, SKU, or skip authorize."
+                  : `Settles to ${
+                      product.merchantAddress
+                        ? `${product.merchantAddress.slice(0, 6)}…${product.merchantAddress.slice(-4)}`
+                        : "the store payTo"
+                    } on Base Sepolia after you authorize.`}
+              </p>
               {screenAs ? (
                 <div className="rounded-md border border-destructive/35 bg-destructive/5 px-3 py-2.5 text-[12px] leading-relaxed text-foreground/80">
                   <p className="font-medium text-destructive">
@@ -213,11 +205,12 @@ export function ProductPayModal({
           ) : null}
         </div>
 
-        <div className="flex shrink-0 justify-end gap-2 border-t border-border px-5 py-3">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border px-5 py-4">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             disabled={busy}
+            className="h-10 px-3"
             onClick={() => {
               if (step === "confirm") setStep("detail");
               else onClose();
@@ -229,6 +222,7 @@ export function ProductPayModal({
             <Button
               type="button"
               disabled={busy}
+              className="h-10 min-w-[10rem] px-5"
               onClick={() => setStep("confirm")}
             >
               Continue to pay
@@ -237,13 +231,12 @@ export function ProductPayModal({
             <Button
               type="button"
               disabled={busy || payToRefused}
+              className="h-10 min-w-[10rem] px-5"
               onClick={onPay}
             >
               {busy
                 ? "Paying USDC…"
-                : product.quarantined
-                  ? "Authorize locked settle"
-                  : "Authorize purchase"}
+                : `Authorize ${product.price} USDC`}
             </Button>
           )}
         </div>
