@@ -62,8 +62,8 @@ export default function MerchantSignupPage() {
           Create merchant account
         </h1>
         <p className="mt-2 text-sm text-foreground/70">
-          Does not create a shopper account. Next: bind crypto + Visa receive,
-          then publish.
+          Does not create a shopper account. Next: bind a crypto receiving
+          wallet, then publish.
         </p>
       </div>
 

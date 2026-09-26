@@ -2,7 +2,7 @@
 
 # Agentize
 
-[![Base Sepolia](https://img.shields.io/badge/Base Sepolia%20Testnet-USDC%20x402-23292F?style=for-the-badge)](#agentize)
+[![Base Sepolia](https://img.shields.io/badge/Base%20Sepolia%20Testnet-USDC%20x402-23292F?style=for-the-badge)](#agentize)
 [![Protocol](https://img.shields.io/badge/Open%20protocol-any%20HTTP%20agent-0B6E4F?style=for-the-badge)](#agentize)
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-agents-412991?style=for-the-badge&logo=openai&logoColor=white)](#try-it)

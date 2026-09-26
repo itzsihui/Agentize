@@ -51,8 +51,8 @@ export default function MerchantLoginPage() {
           Sign in
         </h1>
         <p className="mt-2 text-sm text-foreground/70">
-          Separate from Shop — bind crypto + Visa receiving accounts, then
-          publish products linked to you.
+          Separate from Shop — bind a crypto receiving wallet, then publish
+          products linked to you.
         </p>
       </div>
 
