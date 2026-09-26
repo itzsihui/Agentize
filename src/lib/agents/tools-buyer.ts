@@ -57,6 +57,15 @@ function buildPayerClient() {
   if (!key) return null;
   const account = privateKeyToAccount(key);
   const client = new x402Client();
+  // Default spendControls only allow findDefaultAsset matches. Explicitly allow
+  // our settle token so a mis-set TOKEN_ADDRESS fails later with a clear error
+  // instead of a generic allowlist reject — and so custom tokens can settle.
+  client.setSpendControls({
+    allowedAssets: [
+      { network: config.network, asset: config.tokenAddress },
+    ],
+    maxAmountPerPayment: false,
+  });
   registerExactEvmScheme(client, {
     signer: account,
     networks: [config.network],

@@ -1213,6 +1213,10 @@ export default function BuyerPage() {
       } catch (error) {
         const messageText =
           error instanceof Error ? error.message : "Payment failed";
+        const interceptaBlocked =
+          lastInterceptaReport?.outcome === "refuse" ||
+          lastInterceptaReport?.outcome === "hold" ||
+          /intercepta|blocked ·/i.test(messageText);
         setState((prev) => ({
           ...prev,
           phase: "chat",
@@ -1222,18 +1226,12 @@ export default function BuyerPage() {
             ...prev.messages,
             {
               role: "assistant",
-              content:
-                "Payment blocked by Intercepta. Full live API lines are in Protocol / Intercepta (bottom right).",
-              interceptaReport:
-                lastInterceptaReport ??
-                buildInterceptaReport({
-                  outcome: "refuse",
-                  title: "Intercepta · payment blocked",
-                  merchant: {
-                    decision: "refuse",
-                    reasons: [messageText],
-                  },
-                }),
+              content: interceptaBlocked
+                ? "Payment blocked by Intercepta. Full live API lines are in Protocol / Intercepta (bottom right)."
+                : `Payment failed before settle: ${messageText}`,
+              ...(lastInterceptaReport
+                ? { interceptaReport: lastInterceptaReport }
+                : {}),
             },
           ],
           steps: updateStep(prev.steps, "settle", {
