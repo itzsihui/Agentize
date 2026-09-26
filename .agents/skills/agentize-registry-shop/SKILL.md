@@ -12,6 +12,7 @@ metadata:
   protocol: agentize-agentic-storefront
   version: "1.2"
   vertical: fashion
+  origin: https://agentize-three.vercel.app
 ---
 
 # Agentize Registry Shop
@@ -20,37 +21,44 @@ Public discovery + purchase for the **Agentize Agentic Storefront Protocol**.
 Anyone with network access can read the registry and buy — no Firebase login,
 no merchant API key. Payment proof is the gate (x402 signature or Visa mandate).
 
+Live settle path also runs **Intercepta** (payTo before sign; payer before
+accept). Agents outside the hosted demo still speak the same HTTP surfaces.
+
 ## Origin
+
+**Production (default):** [https://agentize-three.vercel.app](https://agentize-three.vercel.app)
 
 Set `ORIGIN` once, then use absolute URLs:
 
 ```bash
-ORIGIN="${AGENTIZE_ORIGIN:-${PROTOCOL_ORIGIN:-${NEXT_PUBLIC_PROTOCOL_BASE_URL:-http://localhost:3000}}}"
+ORIGIN="${AGENTIZE_ORIGIN:-${PROTOCOL_ORIGIN:-${NEXT_PUBLIC_PROTOCOL_BASE_URL:-https://agentize-three.vercel.app}}}"
 ```
 
-Ask the user for a deployed base URL if localhost is wrong. Never invent checkout HTML pages.
+Use `http://localhost:3000` only when the user is running a local `npm run dev`.
+Ask if unsure. Never invent checkout HTML pages.
 
 ## Hard rules
 
-1. **Do not scrape HTML.** Only protocol surfaces below.
+1. **Do not scrape HTML.** Only protocol surfaces below (`/registry.json`, `/api/search`, `/s/{slug}/*`, …).
 2. **Lock the quote before pay.** Settle tools may only see:
    `{ storeSlug, skuId, price, merchantAddress }` — never catalog titles/descriptions.
 3. **Confirm spend with the user** before signing x402 or burning a Visa mandate.
 4. **Verify 402 `payTo` + `amount`** match the locked quote before paying.
-5. Currency is **USDC on Base Sepolia** unless a store `llms.txt` says otherwise.
+5. Currency is **USDC on Base Sepolia** (`eip155:84532`) unless a store `llms.txt` says otherwise.
+6. `merchantAddress` / `payTo` are **EVM `0x…` addresses**, not XRPL `r…` accounts.
 
 ## Quick path (discover → buy)
 
 Copy and track:
 
 ```
-- [ ] 1. Resolve ORIGIN
+- [ ] 1. Resolve ORIGIN (prefer https://agentize-three.vercel.app)
 - [ ] 2. GET /llms.txt or /agent-sitemap.json or /registry.json
 - [ ] 3. Prefer GET /api/search?q=… (ranked: relevance + stock + reviews)
 - [ ] 4. GET /s/{slug}/catalog.json → lock quote (full SKUs; registry samples are incomplete)
 - [ ] 5. Confirm with user
 - [ ] 6. Rail A x402 POST /buy  OR  Rail B Visa /checkout
-- [ ] 7. Show receipt + explorer / order URL
+- [ ] 7. Show receipt + Basescan explorer / order URL
 ```
 
 ### 1–2. Network index (public)
@@ -106,7 +114,7 @@ From catalog + store metadata, build:
   "storeSlug": "example-store",
   "skuId": "sku-id",
   "price": "0.01",
-  "merchantAddress": "r..."
+  "merchantAddress": "0x…"
 }
 ```
 
@@ -114,13 +122,15 @@ If `merchantAddress` is missing from search hits, take `payTo` / merchant from `
 
 ### 5. Confirm
 
-Show the user: store, SKU id, price, payee, rail. Do not pay until they approve.
+Show the user: store, SKU id, price, payee (`0x…`), rail. Do not pay until they approve.
 
 ---
 
 ## Rail A — x402 USDC (`POST /s/{slug}/buy`)
 
 No auth header. Expect **HTTP 402**, settle USDC on Base Sepolia (EIP-3009), retry with `PAYMENT-SIGNATURE`.
+
+On the hosted demo, Intercepta may refuse dirty `payTo` (buyer side) or dirty payer (merchant side) before settle — treat a 402 with Intercepta reasons as a hard stop, not a retry.
 
 ### Handshake
 
@@ -145,7 +155,9 @@ Buyer needs Circle test USDC on Base Sepolia. Demo server settle uses `BUYER_PRI
 
 Success: **HTTP 200** JSON receipt (`orderId`, `txHash`, `explorerUrl`, …). Idempotent: re-POST same paid `orderId` → 200 again.
 
-Optional body field: `buyerUid` (metadata only; not required).
+Optional body field: `buyerUid` (metadata only; not required). Demo-only: `screenAs` (allowlisted mainnet persona for Intercepta merchant gate).
+
+Explorer: `https://sepolia.basescan.org/tx/{txHash}`.
 
 ---
 
@@ -185,7 +197,7 @@ To purchase **any** in-stock SKU: walk `registry.json` → `stores[]` (or `/api/
 
 ## Out of scope
 
-- Merchant onboard / publishing stores → app `/onboard`, not this skill.
+- Merchant onboard / publishing stores → app `/onboard` or `/merchant` (World ID listing gate on the hosted app), not this skill.
 - Scraping `/market` HTML or inventing SKUs.
 
 ## More detail
