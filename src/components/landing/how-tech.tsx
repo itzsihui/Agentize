@@ -13,8 +13,8 @@ const STEPS = [
   },
   {
     label: "Search",
-    mono: "GET /api/search",
-    body: "Intent ranking across stores — same path for humans and agents.",
+    mono: "skill · GET /api/search",
+    body: "Buyer agents drop the skill, then rank via the same path humans use.",
   },
   {
     label: "Authorize",
@@ -120,7 +120,7 @@ export function LandingHowTech() {
                   No ChatGPT or Claude gate
                 </p>
               </div>
-              <div className="p-3 [&_.no-visible-scrollbar]:!h-44">
+              <div className="p-3 [&_.no-visible-scrollbar]:!h-56">
                 <Terminal
                   username="agent"
                   enableSound={false}
@@ -129,16 +129,18 @@ export function LandingHowTech() {
                   initialDelay={400}
                   className="max-w-none px-0"
                   commands={[
+                    "drop agentize-registry-shop",
                     "curl /registry.json",
                     "curl '/api/search?q=linen+shirt'",
                     "curl -X POST /s/canopy-wear/buy",
                   ]}
                   outputs={{
-                    0: ["# stores[] · agent-readable index"],
-                    1: [
+                    0: ["# skill loaded · no API key · public HTTP"],
+                    1: ["# stores[] · agent-readable index"],
+                    2: [
                       '{ "mode": "semantic", "products": [/* ranked */] }',
                     ],
-                    2: ["HTTP 402 · PAYMENT-REQUIRED · then settle"],
+                    3: ["HTTP 402 · PAYMENT-REQUIRED · then settle"],
                   }}
                 />
               </div>

@@ -20,6 +20,10 @@ const PAIRS = [
     problem: "Merchant admin marathon to go live",
     solution: "Talk, CSV, or URL → live endpoints",
   },
+  {
+    problem: "Every buyer agent rebuilds checkout",
+    solution: "Drop agentize-registry-shop and purchase",
+  },
 ] as const;
 
 export function LandingProblemSolutionPairs() {

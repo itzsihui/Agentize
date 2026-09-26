@@ -34,7 +34,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Agentize | Open agent storefronts",
   description:
-    "Agent-ready stores open to any HTTP agent — not locked to ChatGPT or Claude. Shoppers discover via /api/search and settle USDC in chat via x402. Catalog text cannot change payee, amount, or skip authorize.",
+    "Turn human shops into agent-readable storefronts. Drop the registry skill so any buyer agent can discover and pay USDC via x402. World-verified merchants. Intercepta at settle.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -44,6 +44,10 @@ const ROWS: { feature: string; cells: Cell[] }[] = [
     feature: "No app / marketplace / runtime gate",
     cells: ["no", "no", "yes", "no", "no", "yes"],
   },
+  {
+    feature: "Drop-in buyer skill (any agent)",
+    cells: ["no", "no", "no", "no", "partial", "yes"],
+  },
 ];
 
 function CellMark({ value, highlight }: { value: Cell; highlight?: boolean }) {

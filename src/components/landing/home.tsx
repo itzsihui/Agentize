@@ -8,6 +8,7 @@ import { LandingLenis } from "@/components/landing/lenis-root";
 import { MetalHumanStage } from "@/components/landing/metal-human-stage";
 import { LandingProblemImpact } from "@/components/landing/problem-impact";
 import { LandingProblemSolutionPairs } from "@/components/landing/problem-solution-pairs";
+import { LandingSkill } from "@/components/landing/skill";
 import { LandingSponsorFlow } from "@/components/landing/sponsor-flow";
 import { Reveal } from "@/components/landing/reveal";
 import { cn } from "@/lib/utils";
@@ -73,7 +74,7 @@ export function LandingHome() {
                   "landing-rise landing-rise-delay-1 mt-4 max-w-[40ch] text-base leading-relaxed text-[var(--landing-fog)]/70",
                 )}
               >
-                Open registry and search — not locked inside ChatGPT or Claude.
+                Open registry and search, not locked inside ChatGPT or Claude.
                 Settle USDC in chat via x402.
               </p>
               <div
@@ -109,7 +110,7 @@ export function LandingHome() {
                   Log in as seller
                 </h2>
                 <p className="mt-2 max-w-[34ch] text-sm leading-relaxed opacity-70 group-hover:opacity-90">
-                  Bind a wallet, publish to the open registry — shoppable by
+                  Bind a wallet, publish to the open registry. Shoppable by
                   every agent.
                 </p>
                 <span className="mt-6 inline-flex text-sm font-medium underline-offset-4 group-hover:underline">
@@ -127,8 +128,8 @@ export function LandingHome() {
                   Log in as buyer
                 </h2>
                 <p className="mt-2 max-w-[34ch] text-sm leading-relaxed opacity-70 group-hover:opacity-90">
-                  Rank via /api/search — same endpoint agents use — then settle
-                  after you authorize.
+                  Shop in chat, or drop the registry skill into any agent and
+                  buy over public HTTP.
                 </p>
                 <span className="mt-6 inline-flex text-sm font-medium underline-offset-4 group-hover:underline">
                   Continue to Shop
@@ -141,6 +142,7 @@ export function LandingHome() {
           <LandingProblemSolutionPairs />
           <LandingCompetitorTable />
           <LandingHowTech />
+          <LandingSkill />
           <LandingSponsorFlow />
           <LandingGoToMarket />
 
@@ -150,7 +152,7 @@ export function LandingHome() {
                 Agentize
               </p>
               <p className="mt-6 max-w-[36ch] text-base text-[var(--lp-muted)] md:text-lg">
-                Publish once for every agent. Sell first — shoppers follow.
+                Publish once for every agent. Sell first. Shoppers follow.
               </p>
               <div className="mt-10 flex flex-wrap gap-3">
                 <Link
@@ -178,6 +180,9 @@ export function LandingHome() {
                 >
                   Sell
                 </Link>
+                <a href="#skill" className="hover:text-[var(--lp-ink)]">
+                  Skill
+                </a>
                 <Link href="/buyer/login" className="hover:text-[var(--lp-ink)]">
                   Shop
                 </Link>
