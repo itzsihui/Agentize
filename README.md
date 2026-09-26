@@ -17,11 +17,11 @@ Repo → [github.com/itzsihui/Agentize](https://github.com/itzsihui/Agentize) ·
 
 ## Team
 
-Built for EthGlobal / SingHacksy 2026.
+Built for EthGlobal Tokyo 2026.
 
 | Name | GitHub | X |
 |---|---|---|
-| Ong Si Hui | [@itzsihui](https://github.com/itzsihui) | [@itzmeeariel](https://x.com/itzmeeariel) |
+| Ong Si Hui (Ariel) | [@itzsihui](https://github.com/itzsihui) | [@itzmeeariel](https://x.com/itzmeeariel) |
 | Sumit Sanjay Shinde | [@sumitshinde0702](https://github.com/sumitshinde0702) | [@sumitshindeiru](https://x.com/sumitshindeiru) |
 
 ---
