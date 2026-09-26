@@ -30,7 +30,7 @@ export function SiteHeader({
         <Link
           href="/"
           className={cn(
-            "font-[family-name:var(--font-syne)] text-lg font-extrabold tracking-[-0.04em]",
+            "landing-brand text-lg",
             dark ? "text-neutral-100" : "text-foreground",
           )}
         >

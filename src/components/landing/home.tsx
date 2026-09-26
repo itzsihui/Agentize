@@ -39,7 +39,7 @@ export function LandingHome() {
           <header className="relative z-20 flex h-16 items-center justify-between px-6 md:px-10">
             <Link
               href="/"
-              className="font-[family-name:var(--font-space)] text-lg font-semibold tracking-tight text-[var(--landing-fog)]"
+              className="landing-brand text-lg text-[var(--landing-fog)]"
             >
               Agentize
             </Link>
@@ -146,7 +146,7 @@ export function LandingHome() {
 
           <section className="border-t border-[var(--lp-line)] px-6 py-28 md:px-10 md:py-36">
             <Reveal className="mx-auto max-w-[1200px]">
-              <p className="font-[family-name:var(--font-space)] text-[clamp(3rem,10vw,6.5rem)] font-semibold leading-[0.9] tracking-tight text-[var(--lp-ink)]">
+              <p className="landing-brand text-[clamp(3rem,10vw,6.5rem)] text-[var(--lp-ink)]">
                 Agentize
               </p>
               <p className="mt-6 max-w-[36ch] text-base text-[var(--lp-muted)] md:text-lg">
@@ -168,7 +168,7 @@ export function LandingHome() {
 
           <footer className="border-t border-[var(--lp-line)] px-6 py-8 md:px-10">
             <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 text-sm text-[var(--lp-muted)]">
-              <span className="font-[family-name:var(--font-space)] font-semibold tracking-tight text-[var(--lp-ink)]">
+              <span className="landing-brand text-base text-[var(--lp-ink)]">
                 Agentize
               </span>
               <div className="flex flex-wrap items-center gap-6">
