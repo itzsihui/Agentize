@@ -39,7 +39,14 @@ export function worldPublicConfig() {
 
 /** Server-only: RP signing key (never expose to the client). */
 export function worldRpSigningKey(): string | null {
-  return process.env.WORLD_RP_SIGNING_KEY?.trim() || null;
+  // Tolerate common env-paste artifacts: wrapping quotes, literal "\n", spaces.
+  const raw = process.env.WORLD_RP_SIGNING_KEY || "";
+  const key = raw
+    .replace(/\\n/g, "")
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .replace(/\s+/g, "");
+  return key || null;
 }
 
 /**

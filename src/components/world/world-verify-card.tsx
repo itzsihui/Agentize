@@ -104,17 +104,19 @@ export function WorldVerifyCard({
         method: "POST",
         headers: await merchantJsonHeaders(user),
       });
-      const sig = (await res.json()) as RpSigResponse;
-      if (!res.ok) throw new Error(sig.error || "Could not start World ID");
+      const sig = (await res.json().catch(() => ({}))) as Partial<RpSigResponse>;
+      if (!res.ok || !sig.signature) {
+        throw new Error(sig.error || `Could not start World ID (HTTP ${res.status})`);
+      }
       setRp({
         ctx: {
-          rp_id: sig.rp_id,
-          nonce: sig.nonce,
-          created_at: sig.created_at,
-          expires_at: sig.expires_at,
+          rp_id: sig.rp_id!,
+          nonce: sig.nonce!,
+          created_at: sig.created_at!,
+          expires_at: sig.expires_at!,
           signature: sig.signature,
         },
-        signal: sig.signal,
+        signal: sig.signal!,
       });
       setOpen(true);
     } catch (err) {

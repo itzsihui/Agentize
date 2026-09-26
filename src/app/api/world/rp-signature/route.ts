@@ -22,10 +22,23 @@ export async function POST(request: Request) {
       { status: 503 },
     );
   }
-  const { sig, nonce, createdAt, expiresAt } = signRequest({
-    signingKeyHex: key,
-    action: WORLD_ACTION_PUBLISH_STOREFRONT,
-  });
+  let signed: ReturnType<typeof signRequest>;
+  try {
+    signed = signRequest({
+      signingKeyHex: key,
+      action: WORLD_ACTION_PUBLISH_STOREFRONT,
+    });
+  } catch (err) {
+    console.error("[world-rp-signature] signing failed", err);
+    return Response.json(
+      {
+        error:
+          "World ID signing key is misconfigured on this server (WORLD_RP_SIGNING_KEY must be a 64-char hex private key).",
+      },
+      { status: 503 },
+    );
+  }
+  const { sig, nonce, createdAt, expiresAt } = signed;
   return Response.json({
     rp_id: cfg.rpId,
     nonce,
