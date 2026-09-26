@@ -14,6 +14,17 @@ export type BuyerStep = {
   text: string;
 };
 
+export type BuyerReceipt = {
+  orderId?: string;
+  explorerUrl?: string;
+  txHash?: string;
+  amount?: string;
+  rail?: string;
+  status?: string;
+  intercepta?: unknown;
+  [key: string]: unknown;
+};
+
 export type InterceptaGateSummary = {
   decision?: string;
   toxicScore?: number | null;
