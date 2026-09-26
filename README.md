@@ -42,7 +42,7 @@ Stripe-style / Instant Checkout–class listings often live where **ChatGPT** an
 
 ### Impact (structural)
 
-| | |
+| Signal | What it means |
 |---|---|
 | **2** | Consumer chat apps get the closed catalog path (ChatGPT, Claude) |
 | **0** | Open HTTP surface for everyone else on that same path |
