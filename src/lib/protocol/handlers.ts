@@ -221,6 +221,9 @@ export async function handleBuy(slug: string, request: Request) {
         reasons: verdict.reasons,
         toxicScore: verdict.toxicScore,
         payer: verdict.screenedAddress,
+        traits: verdict.traits,
+        source: verdict.source,
+        live: true,
       },
     };
     emit({
@@ -230,7 +233,7 @@ export async function handleBuy(slug: string, request: Request) {
       store: slug,
       orderId,
       rail: "x402",
-      message: `402 Intercepta blocked payer ${verdict.screenedAddress}: ${verdict.reasons[0] || verdict.decision}`,
+      message: `402 Intercepta ${verdict.decision} payer ${verdict.screenedAddress} · score=${verdict.toxicScore ?? "?"} · source=${verdict.source} · ${verdict.reasons[0] || verdict.decision} · traits=[${(verdict.traits ?? []).slice(0, 4).join(",")}]`,
     });
     return new Response(JSON.stringify(blocked, null, 2), {
       status: 402,
@@ -288,16 +291,27 @@ export async function handleBuy(slug: string, request: Request) {
     await repo.putStore(store);
   }
 
-    emit({
-      status: 200,
-      method: "POST",
-      path: `/s/${slug}/buy`,
-      store: slug,
-      orderId,
-      rail: "x402",
-      message: `HTTP 200 receipt ${txHash} · Intercepta allow score ${verdict.toxicScore ?? 0}`,
-    });
-  return json(receipt(paid, store));
+  emit({
+    status: 200,
+    method: "POST",
+    path: `/s/${slug}/buy`,
+    store: slug,
+    orderId,
+    rail: "x402",
+    message: `HTTP 200 receipt ${txHash} · Intercepta allow score ${verdict.toxicScore ?? 0} · source=${verdict.source} · screened=${verdict.screenedAddress}`,
+  });
+  return json({
+    ...receipt(paid, store),
+    intercepta: {
+      decision: verdict.decision,
+      reasons: verdict.reasons,
+      toxicScore: verdict.toxicScore,
+      screenedAddress: verdict.screenedAddress,
+      traits: verdict.traits,
+      source: verdict.source,
+      live: true,
+    },
+  });
 }
 
 export async function handleCheckout(slug: string, request: Request) {

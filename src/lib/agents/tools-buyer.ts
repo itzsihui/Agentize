@@ -14,14 +14,21 @@ export type BuyerStep = {
   text: string;
 };
 
-export type BuyerReceipt = {
-  orderId?: string;
-  explorerUrl?: string;
-  txHash?: string;
-  amount?: string;
-  rail?: string;
-  status?: string;
-  [key: string]: unknown;
+export type InterceptaGateSummary = {
+  decision?: string;
+  toxicScore?: number | null;
+  source?: string;
+  address?: string;
+  reasons?: string[];
+};
+
+export type PayX402Result = {
+  steps: BuyerStep[];
+  receipt?: BuyerReceipt;
+  intercepta?: {
+    buyer?: InterceptaGateSummary;
+    merchant?: InterceptaGateSummary;
+  };
 };
 
 /** Locked settle quote — no product titles or catalog prose. */
@@ -61,11 +68,13 @@ export async function payX402Tool(args: {
   buyerUid?: string;
   /** Allowlisted demo persona — merchant screens this mainnet address. */
   screenAs?: string;
-}): Promise<{ steps: BuyerStep[]; receipt?: BuyerReceipt }> {
+}): Promise<PayX402Result> {
   const steps: BuyerStep[] = [];
   const quote = args.quote;
   const buyerUid = args.buyerUid?.trim() || undefined;
   const screenAs = resolveAllowedScreenAs(args.screenAs);
+  let buyerGate: InterceptaGateSummary | undefined;
+  let merchantGate: InterceptaGateSummary | undefined;
 
   const resolved = await resolveBuyerTarget({
     slug: quote?.storeSlug || args.slug,
@@ -197,18 +206,25 @@ export async function payX402Tool(args: {
   });
 
   const payToVerdict = await screenPayToForBuyer(accept.payTo.trim());
+  buyerGate = {
+    decision: payToVerdict.decision,
+    toxicScore: payToVerdict.toxicScore ?? null,
+    source: payToVerdict.source,
+    address: accept.payTo.trim(),
+    reasons: payToVerdict.reasons,
+  };
   steps.push({
     type: payToVerdict.decision === "refuse" ? "error" : "info",
-    text: `Intercepta payTo ${payToVerdict.decision} · ${payToVerdict.reasons[0] || accept.payTo}`,
+    text: `Intercepta · payTo ${payToVerdict.decision} · score ${payToVerdict.toxicScore ?? "?"} · ${payToVerdict.source}`,
   });
   if (payToVerdict.decision === "refuse") {
-    return { steps };
+    return { steps, intercepta: { buyer: buyerGate } };
   }
 
   if (screenAs) {
     steps.push({
       type: "info",
-      text: `Demo persona: merchant will Intercepta-screen ${screenAs} (Sepolia signer unchanged)`,
+      text: `Demo persona · merchant screens ${screenAs.slice(0, 6)}…${screenAs.slice(-4)} (Sepolia signer unchanged)`,
     });
   }
 
@@ -303,17 +319,40 @@ export async function payX402Tool(args: {
     receipt.explorerUrl = explorerTx(String(receipt.txHash));
   }
   const intercepta = receipt.intercepta as
-    | { decision?: string; reasons?: string[] }
+    | {
+        decision?: string;
+        reasons?: string[];
+        toxicScore?: number;
+        payer?: string;
+        screenedAddress?: string;
+        source?: string;
+      }
     | undefined;
-  if (!second.ok && intercepta?.reasons?.length) {
+  if (intercepta) {
+    merchantGate = {
+      decision: intercepta.decision,
+      toxicScore: intercepta.toxicScore ?? null,
+      source: intercepta.source,
+      address:
+        intercepta.payer || intercepta.screenedAddress || screenAs || undefined,
+      reasons: intercepta.reasons,
+    };
+    steps.push({
+      type: intercepta.decision === "allow" ? "info" : "error",
+      text: `Intercepta · payer ${intercepta.decision || "blocked"} · score ${intercepta.toxicScore ?? "?"}`,
+    });
+  }
+  if (!second.ok && intercepta?.decision) {
     steps.push({
       type: "error",
-      text: `Merchant Intercepta ${intercepta.decision || "blocked"}: ${intercepta.reasons.join(" · ")}`,
+      text: `Blocked · ${intercepta.decision} · score ${intercepta.toxicScore ?? "?"}`,
     });
   } else {
     steps.push({
       type: second.ok ? "success" : "error",
-      text: `HTTP ${second.status} ${second.ok ? "receipt unlocked" : JSON.stringify(receipt)}`,
+      text: second.ok
+        ? `HTTP ${second.status} receipt unlocked`
+        : `HTTP ${second.status} settle failed`,
     });
   }
   if (second.ok && receipt.explorerUrl) {
@@ -321,5 +360,9 @@ export async function payX402Tool(args: {
   } else if (second.ok && receipt.txHash) {
     steps.push({ type: "success", text: explorerTx(String(receipt.txHash)) });
   }
-  return { steps, receipt };
+  return {
+    steps,
+    receipt,
+    intercepta: { buyer: buyerGate, merchant: merchantGate },
+  };
 }

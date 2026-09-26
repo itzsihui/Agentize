@@ -4,8 +4,8 @@ import type { InterceptaDemoPersona } from "./types";
 
 /**
  * Public mainnet fixtures Intercepta typically scores as high-risk
- * (OFAC / mixer-adjacent). Replace via INTERCEPTA_DEMO_PERSONAS with
- * Discord-pinned addresses from the EthGlobal booth channel.
+ * (OFAC / scam clusters). Replace via INTERCEPTA_DEMO_PERSONAS with
+ * Discord-pinned EOAs from the EthGlobal booth channel.
  */
 export const DEFAULT_DEMO_PERSONAS: InterceptaDemoPersona[] = [
   {
@@ -13,12 +13,6 @@ export const DEFAULT_DEMO_PERSONAS: InterceptaDemoPersona[] = [
     label: "Sanctioned",
     blurb: "OFAC-listed Hydra-related wallet — dirty-money / sanctions story.",
     address: "0x7F367cC41522cE07553e823bf3be79A889DEbe1B",
-  },
-  {
-    id: "mixer",
-    label: "Mixer-linked",
-    blurb: "Tornado Cash router — mixer exposure before merchant settle.",
-    address: "0x8589427373D6D84E98730D7795D8f6f8731FDA16",
   },
   {
     id: "scammer",

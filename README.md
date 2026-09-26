@@ -166,9 +166,9 @@ Merchant `/s/{slug}/buy` **refuses dirty payers before facilitator settle**. Buy
 
 ### Demo (pass + block)
 
-1. Add `INTERCEPTA_API_KEY` from [intercepta.io/ethglobal](https://intercepta.io/ethglobal). Optional: paste Discord-pinned addresses into `INTERCEPTA_DEMO_PERSONAS`. Defaults are public mainnet OFAC/mixer fixtures.
+1. Add `INTERCEPTA_API_KEY` from [intercepta.io/ethglobal](https://intercepta.io/ethglobal). Optional: paste Discord-pinned EOAs into `INTERCEPTA_DEMO_PERSONAS`. Defaults are public mainnet OFAC / scam fixtures.
 2. **Pass:** `/buyer` → Demo persona **Honest buyer** → authorize USDC → 200 receipt.
-3. **Block:** **Pretend to be malicious** → pick Sanctioned / Mixer / Scammer → new chat banner → authorize → merchant **402** with Intercepta reasons (no settle). Reasons show in chat, `/dashboard` Ops, and the failed order.
+3. **Block:** **Pretend to be malicious** → pick Sanctioned / Scammer → new chat banner → authorize → merchant **402** with Intercepta reasons (no settle). Short verdict in chat; full live lines in Protocol / Intercepta popup.
 
 Settlement still uses `BUYER_PRIVATE_KEY` on Base Sepolia. Intercepta screens the **mainnet** persona address.
 

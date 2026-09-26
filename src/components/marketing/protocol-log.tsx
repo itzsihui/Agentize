@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ProtocolEvent } from "@/lib/store/types";
 
-export function ProtocolLog({ className }: { className?: string }) {
+export function ProtocolLog({
+  className,
+  bodyClassName,
+}: {
+  className?: string;
+  bodyClassName?: string;
+}) {
   const [events, setEvents] = useState<ProtocolEvent[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -43,30 +49,38 @@ export function ProtocolLog({ className }: { className?: string }) {
         </div>
         <div className="flex-1 text-center">
           <span className="text-xs text-neutral-400">
-            agentize — x402 + Visa card
+            agentize — x402 + Intercepta LIVE
           </span>
         </div>
         <div className="w-[52px]" />
       </div>
       <div
         ref={scroller}
-        className="h-80 overflow-y-auto p-4 font-mono text-xs leading-relaxed"
+        className={cn(
+          "h-80 overflow-y-auto p-4 font-mono text-xs leading-relaxed",
+          bodyClassName,
+        )}
       >
         {events.length === 0 ? (
           <p className="text-neutral-500">waiting for agent traffic…</p>
         ) : (
-          events.map((event) => (
+          events.map((event) => {
+              const intercepta = /intercepta/i.test(event.message + event.path);
+              return (
             <p
               key={`${event.ts}-${event.path}-${event.message}`}
               className={cn(
                 "whitespace-pre-wrap",
+                intercepta && "text-sky-300",
                 // x402 / cardapi: HTTP 402 is the payment challenge — success path, not an error
-                event.status === 402 && "text-amber-300",
-                event.status === 200 && "text-emerald-400",
-                event.status >= 400 &&
+                !intercepta && event.status === 402 && "text-amber-300",
+                !intercepta && event.status === 200 && "text-emerald-400",
+                !intercepta &&
+                  event.status >= 400 &&
                   event.status !== 402 &&
                   "text-red-400",
-                event.status < 400 &&
+                !intercepta &&
+                  event.status < 400 &&
                   event.status !== 200 &&
                   "text-neutral-400",
               )}
@@ -74,7 +88,8 @@ export function ProtocolLog({ className }: { className?: string }) {
               {new Date(event.ts).toISOString().slice(11, 23)} {event.method}{" "}
               {event.path} → {event.status} {event.message}
             </p>
-          ))
+              );
+            })
         )}
       </div>
     </div>

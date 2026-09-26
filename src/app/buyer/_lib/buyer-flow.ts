@@ -47,6 +47,8 @@ export type PurchaseQuote = {
   rail: PaymentRail;
 };
 
+import type { InterceptaReport } from "./intercepta-report";
+
 export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -56,6 +58,8 @@ export type ChatMessage = {
   links?: Array<{ label: string; href: string }>;
   /** Expandable thought process for this turn (stays after search completes). */
   steps?: ChainStep[];
+  /** Structured Intercepta settle report (table in chat). */
+  interceptaReport?: InterceptaReport;
 };
 
 export type FashionProfile = {

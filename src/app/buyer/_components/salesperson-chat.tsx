@@ -13,6 +13,7 @@ import type {
 } from "../_lib/buyer-flow";
 import { FASHION_STARTERS, FASHION_WELCOME } from "../_lib/fashion-prompts";
 import { BuyerChainOfThought } from "./buyer-chain-of-thought";
+import { InterceptaReportCard } from "./intercepta-report-card";
 import {
   InteractiveCheckout,
   type CartLine,
@@ -239,6 +240,10 @@ export function SalespersonChat({
                     />
                   </div>
                 </div>
+
+                {!isUser && msg.interceptaReport ? (
+                  <InterceptaReportCard report={msg.interceptaReport} />
+                ) : null}
 
                 {msg.steps && msg.steps.length > 0 ? (
                   <BuyerChainOfThought

@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ProtocolLog } from "@/components/marketing/protocol-log";
+import { buildInterceptaReport } from "./_lib/intercepta-report";
+import type { InterceptaReport } from "./_lib/intercepta-report";
+import { ProtocolLogPopup } from "@/components/marketing/protocol-log-popup";
 import {
   evaluatePolicy,
   getBuyerCloudSyncUid,
@@ -1005,6 +1007,7 @@ export default function BuyerPage() {
       }));
 
       const links: Array<{ label: string; href: string }> = [];
+      let lastInterceptaReport: InterceptaReport | undefined;
 
       try {
         for (const line of lines) {
@@ -1042,12 +1045,44 @@ export default function BuyerPage() {
                 steps?: Array<{ type: string; text: string }>;
                 error?: string;
                 receipt?: { explorerUrl?: string; orderId?: string };
+                intercepta?: {
+                  buyer?: {
+                    decision?: string;
+                    toxicScore?: number | null;
+                    source?: string;
+                    address?: string;
+                    reasons?: string[];
+                  };
+                  merchant?: {
+                    decision?: string;
+                    toxicScore?: number | null;
+                    source?: string;
+                    address?: string;
+                    reasons?: string[];
+                  };
+                };
               };
+              if (data.intercepta) {
+                const outcome =
+                  data.intercepta.merchant?.decision === "refuse" ||
+                  data.intercepta.buyer?.decision === "refuse"
+                    ? "refuse"
+                    : data.intercepta.merchant?.decision === "hold"
+                      ? "hold"
+                      : "allow";
+                lastInterceptaReport = buildInterceptaReport({
+                  outcome,
+                  buyer: data.intercepta.buyer,
+                  merchant: data.intercepta.merchant,
+                });
+              }
               if (
                 (data.steps ?? []).some((s) => s.type === "error") ||
                 !(data.steps ?? []).some((s) => s.type === "success")
               ) {
-                const errStep = (data.steps ?? []).find((s) => s.type === "error");
+                const errStep =
+                  (data.steps ?? []).find((s) => s.text.startsWith("Blocked ·")) ||
+                  (data.steps ?? []).find((s) => s.type === "error");
                 throw new Error(
                   errStep?.text || data.error || "x402 settlement failed",
                 );
@@ -1150,7 +1185,11 @@ export default function BuyerPage() {
             ...prev.messages,
             {
               role: "assistant",
-              content: "Purchase complete.",
+              content:
+                lastInterceptaReport?.outcome === "allow"
+                  ? "Purchase complete. Intercepta cleared both gates."
+                  : "Purchase complete.",
+              interceptaReport: lastInterceptaReport,
               links: links.length
                 ? links.slice(0, 4).map((l, i) => ({
                     label:
@@ -1179,6 +1218,24 @@ export default function BuyerPage() {
           phase: "chat",
           busy: false,
           error: messageText,
+          messages: [
+            ...prev.messages,
+            {
+              role: "assistant",
+              content:
+                "Payment blocked by Intercepta. Full live API lines are in Protocol / Intercepta (bottom right).",
+              interceptaReport:
+                lastInterceptaReport ??
+                buildInterceptaReport({
+                  outcome: "refuse",
+                  title: "Intercepta · payment blocked",
+                  merchant: {
+                    decision: "refuse",
+                    reasons: [messageText],
+                  },
+                }),
+            },
+          ],
           steps: updateStep(prev.steps, "settle", {
             status: "error",
             description: messageText,
@@ -1401,10 +1458,7 @@ export default function BuyerPage() {
           onPay={() => void authorizeCart()}
         />
 
-        {state.rail === "stablecoin" &&
-        (state.phase === "settle" || state.phase === "done") ? (
-          <ProtocolLog className="max-h-32 shrink-0 overflow-auto" />
-        ) : null}
+        <ProtocolLogPopup />
       </main>
     </div>
   );

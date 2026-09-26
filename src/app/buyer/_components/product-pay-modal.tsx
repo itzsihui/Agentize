@@ -184,9 +184,25 @@ export function ProductPayModal({
                 </span>{" "}
                 after HTTP 402, then unlock with PAYMENT-SIGNATURE.
               </div>
+              {screenAs ? (
+                <div className="rounded-md border border-destructive/35 bg-destructive/5 px-3 py-2.5 text-[12px] leading-relaxed text-foreground/80">
+                  <p className="font-medium text-destructive">
+                    Demo · malicious payer persona
+                  </p>
+                  <p className="mt-1">
+                    You can still authorize. Sepolia signs as usual; the
+                    merchant gate Intercepta-screens{" "}
+                    <span className="font-mono text-[11px]">
+                      {screenAs.slice(0, 6)}…{screenAs.slice(-4)}
+                    </span>
+                    {personaLabel ? ` (${personaLabel})` : ""} and should{" "}
+                    <strong>refuse / hold</strong> before USDC settles.
+                  </p>
+                </div>
+              ) : null}
               <InterceptaRiskBadge
-                address={screenAs || product.merchantAddress}
-                personaLabel={personaLabel}
+                address={product.merchantAddress}
+                personaLabel="payTo"
                 onDecision={(d) => setPayToRefused(d === "refuse")}
               />
             </div>

@@ -86,7 +86,7 @@ export function unavailableVerdict(
   }
   return {
     decision: "refuse",
-    reasons: [`Intercepta unavailable — merchant refuse (fail-closed): ${reason}`],
+    reasons: [`Intercepta unavailable (fail-closed): ${reason}`],
     screenedAddress: address,
     source: "unavailable",
   };
