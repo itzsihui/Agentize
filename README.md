@@ -174,7 +174,7 @@ Settlement still uses `BUYER_PRIVATE_KEY` on Base Sepolia. Intercepta screens th
 
 ### API feedback (Intercepta)
 
-Time to first live call was short: docs + `X-API-KEY` on GET `/quick-scan` were enough. What confused us: risk graphs are mainnet-only, so a funded Sepolia payer always looks clean — the Discord pin / `screenAs` override is required for the blocked path. Missing from public docs: an official fixture list (pins live in Discord) and any non-EVM coverage; we wanted a `chainId` on Quick Scan for testnet context.
+Time to first live call was a few minutes after the EthGlobal key arrived: docs + `X-API-KEY` on `GET …/quick-scan` were enough. What confused us: risk graphs are **mainnet-only**, so a funded Sepolia payer always looks clean — Discord pins / `screenAs` are required for the blocked demo. The account endpoint expects an **EOA**; a contract address (e.g. mixer) can 404 as “EOA doesn’t exist,” which is easy to misread as safe. Missing from public docs: an official fixture list (pins live in Discord), `chainId` / testnet context on Quick Scan, and any public request/receipt URL to prove a call (you only get the response body + your own logs).
 
 ### Scripts
 
