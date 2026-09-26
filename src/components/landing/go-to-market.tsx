@@ -34,7 +34,7 @@ export function LandingGoToMarket() {
     >
       <div className="mx-auto max-w-[1200px]">
         <Reveal>
-          <p className="landing-kicker">06 — Go to market</p>
+          <p className="landing-kicker">07 — Go to market</p>
           <h2 className="mt-5 max-w-[16ch] text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.05] text-[var(--lp-ink)]">
             How we actually go live.
           </h2>

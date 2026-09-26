@@ -33,7 +33,7 @@ const FLOW = [
   {
     id: "buy",
     label: "Buyer agent",
-    sub: "Search · authorize",
+    sub: "Skill · search · authorize",
     kind: "node" as const,
   },
   {
@@ -107,7 +107,7 @@ export function LandingSponsorFlow() {
     >
       <div className="mx-auto max-w-[1200px]">
         <Reveal>
-          <p className="landing-kicker">05 — Sponsors in the flow</p>
+          <p className="landing-kicker">06 — Sponsors in the flow</p>
           <h2 className="mt-5 max-w-[18ch] text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.05] text-[var(--lp-ink)]">
             Where the stack protects the market.
           </h2>
