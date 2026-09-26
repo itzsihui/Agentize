@@ -28,9 +28,9 @@ Built for EthGlobal / SingHacksy 2026.
 
 ## MultiBaas (Curvegrid) — optional
 
-**We did not use MultiBaas in this project.** Agentize talks to Base Sepolia via public RPC + the [x402](https://docs.x402.org) facilitator and Circle test USDC; contract/event indexing through MultiBaas was out of scope for this weekend.
+**We did not use MultiBaas in this project.** Agentize talks to Base Sepolia via public RPC + the [x402](https://docs.x402.org) facilitator and Circle test USDC; contract/event indexing through MultiBaas was out of scope for this weekend
 
-**If we had used it:** MultiBaas would have been a natural fit for merchant `payTo` binding, order receipt indexing, and a hosted explorer of x402 settle txs — we stayed on direct RPC + Basescan links instead.
+**If we had used it:** MultiBaas would have been a natural fit for merchant `payTo` binding, order receipt indexing, and a hosted explorer of x402 settle txs, we stayed on direct RPC + Basescan links instead.
 
 ---
 
@@ -127,7 +127,7 @@ flowchart LR
 ### Prerequisites
 
 - Node.js 20+ and npm  
-- **OpenAI API key** — buyer / merchant agents (+ Whisper)  
+- **OpenAI API key** — buyer / merchant agents   
 - **Firebase** web config — auth / Firestore  
 - **Base Sepolia** — funded buyer EOA + Circle test USDC (see [`scripts/setup-base-sepolia-usdc.md`](./scripts/setup-base-sepolia-usdc.md))  
 - **Optional:** `INTERCEPTA_API_KEY` from [intercepta.io/ethglobal](https://intercepta.io/ethglobal) for live payer / payTo screening  
